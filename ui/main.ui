@@ -38,6 +38,9 @@
    <class>SearchLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">SearchLineEdit.h</header>
+   <slots>
+    <signal>searchKeyWordsChanged(QStringList)</signal>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>

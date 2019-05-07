@@ -10,6 +10,9 @@ public:
   QtFinderWindow &operator=(const QtFinderWindow &other) = delete;
   virtual ~QtFinderWindow() noexcept;
 
+private slots:
+  void onSearchKeyWordsChanged(const QStringList &keyWords);
+
 private:
   Ui::Widget uiWidget;
 };
