@@ -1,0 +1,7 @@
+#include <QtFinderWindow.h>
+
+QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
+  uiWidget.setupUi(this);
+}
+//void QtFinderWindow::show() { uiWidget.searchLinedit->show(); }
+QtFinderWindow::~QtFinderWindow() {}
