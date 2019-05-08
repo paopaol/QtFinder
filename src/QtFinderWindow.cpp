@@ -6,7 +6,7 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   connect(uiWidget.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged, this,
           &QtFinderWindow::onSearchKeyWordsChanged);
 }
-QtFinderWindow::~QtFinderWindow() {}
+QtFinderWindow::~QtFinderWindow() noexcept {}
 
 void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keyWords) {
   qDebug() << keyWords;
