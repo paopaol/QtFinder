@@ -22,7 +22,7 @@ public:
    */
 signals:
   void searchKeyWordsChanged(const QStringList &keywords);
-
+  void directoryChanged(const QString &directory);
 private:
   void parseSearchPattern(const QString &text);
 };

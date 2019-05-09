@@ -4,6 +4,7 @@
 #include <ui_main.h>
 
 #include <QProcess>
+#include <QTimer>
 
 class QtFinderWindow : public QWidget {
 public:
@@ -15,11 +16,19 @@ public:
 private slots:
   void onSearchKeyWordsChanged(const QStringList &keyWords);
   void search(const QStringList &keyWords);
+  void onDirectoryChanged(const QString &directory);
 
 private:
   Ui::Widget uiWidget;
   QProcess fd_;
   QProcess rg_;
+
+  /**@brief Delay in triggering search behavior after entering a keyword
+   */
+  int searchDelay_{700};
+  QTimer delayTimer_;
+  QStringList keyWords_;
+  QString directory_;
 };
 
 #endif /* QTFINDERWINDOW_H */
