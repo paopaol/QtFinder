@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QTextCodec>
 #include <QtFinderWindow.h>
 
 static QString fdPattern(const QStringList &keywords);
@@ -10,9 +11,14 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   connect(uiWidget.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged, this,
           &QtFinderWindow::onSearchKeyWordsChanged);
   connect(&rg_, &QProcess::readyReadStandardOutput, this, [&]() {
-    // while (rg_.isReadable()) {
-    qDebug() << rg_.readAll();
-    // }
+    QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
+    QString line = textCodec->fromUnicode(rg_.readLine());
+    printf("%s", line.toStdString().c_str());
+  });
+  connect(&rg_, &QProcess::readyReadStandardError, [&]() {
+    QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
+    QString line = textCodec->fromUnicode(rg_.readAllStandardError());
+    qDebug() << line;
   });
 }
 QtFinderWindow::~QtFinderWindow() noexcept {}
@@ -28,12 +34,10 @@ void QtFinderWindow::search(const QStringList &keywords) {
 
   fd_.setStandardOutputProcess(&rg_);
 
-  rg_.start("rg", QStringList() << rgPattern(keywords));
+  rg_.start("rg", rgPattern(keywords));
   rg_.waitForStarted();
 
-  fd_.start("fd", QStringList() << "-p" << fdPattern(keywords) << "/opt");
-  qDebug() << fd_.arguments();
-  qDebug() << rg_.arguments();
+  fd_.start("fd", QStringList() << "-p" << fdPattern(keywords) << "~");
   fd_.waitForStarted();
 }
 
@@ -49,7 +53,8 @@ static QString fdPattern(const QStringList &keywords) {
 static QStringList rgPattern(const QStringList &keywords) {
   QStringList patterns;
   for (auto &key : keywords) {
-    patterns << " -e " << key;
+    patterns.push_back("-e");
+    patterns.push_back(key);
   }
   return patterns;
 }
