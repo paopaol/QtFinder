@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>827</width>
-    <height>464</height>
+    <width>918</width>
+    <height>568</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -29,7 +29,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="QListView" name="listView"/>
+    <widget class="QListWidget" name="listWidget"/>
    </item>
   </layout>
  </widget>

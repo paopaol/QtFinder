@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QStringListModel>
 #include <QTextCodec>
 #include <QtFinderWindow.h>
 
@@ -13,7 +14,8 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   connect(&rg_, &QProcess::readyReadStandardOutput, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
     QString line = textCodec->fromUnicode(rg_.readLine());
-    printf("%s", line.toStdString().c_str());
+
+    uiWidget.listWidget->addItem(line);
   });
   connect(&rg_, &QProcess::readyReadStandardError, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
@@ -29,6 +31,7 @@ void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords) {
 }
 
 void QtFinderWindow::search(const QStringList &keywords) {
+  uiWidget.listWidget->clear();
   killProcess(fd_);
   killProcess(rg_);
 
@@ -37,7 +40,7 @@ void QtFinderWindow::search(const QStringList &keywords) {
   rg_.start("rg", rgPattern(keywords));
   rg_.waitForStarted();
 
-  fd_.start("fd", QStringList() << "-p" << fdPattern(keywords) << "~");
+  fd_.start("fd", QStringList() << "-p" << fdPattern(keywords) << "D:/root/home/workspace/hht/svn/219-148-140-97/svn/HHT/HAIFRAttendance");
   fd_.waitForStarted();
 }
 
