@@ -15,6 +15,9 @@ public:
   //! Destructor
   virtual ~SearchLineEdit() noexcept;
 
+protected:
+  void keyPressEvent(QKeyEvent *) override;
+
   /**
    * @brief emited when search key words changed
    * @details the input key word length must >= 3 chars
@@ -23,6 +26,10 @@ public:
 signals:
   void searchKeyWordsChanged(const QStringList &keywords);
   void directoryChanged(const QString &directory);
+  void tabKeyPressed();
+  void ctrlNextPressed();
+  void ctrlPrevPressed();
+
 private:
   void parseSearchPattern(const QString &text);
 };

@@ -9,24 +9,37 @@ static void killProcess(QProcess &process);
 
 QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   uiWidget.setupUi(this);
+
+  connect(&delayTimer_, &QTimer::timeout, this, [&]() { search(keyWords_); });
+  delayTimer_.setSingleShot(true);
+
   connect(uiWidget.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged, this,
           &QtFinderWindow::onSearchKeyWordsChanged);
   connect(uiWidget.searchLineEdit, &SearchLineEdit::directoryChanged, this,
           &QtFinderWindow::onDirectoryChanged);
+  connect(
+      uiWidget.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
+        uiWidget.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
+      });
+  connect(
+      uiWidget.searchLineEdit, &SearchLineEdit::ctrlPrevPressed, this, [&]() {
+        uiWidget.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
+      });
 
-  connect(&rg_, &QProcess::readyReadStandardOutput, this, [&]() {
+  connect(&rg_, &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
-    QString line = textCodec->fromUnicode(rg_.readLine());
-
-    uiWidget.listWidget->addItem(line);
+    while (rg_.canReadLine()) {
+      QString line = rg_.readLine();
+      uiWidget.listWidget->addItem(line);
+    }
+    uiWidget.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
   });
   connect(&rg_, &QProcess::readyReadStandardError, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
     QString line = textCodec->fromUnicode(rg_.readAllStandardError());
     qDebug() << line;
   });
-  connect(&delayTimer_, &QTimer::timeout, this, [&]() { search(keyWords_); });
-  delayTimer_.setSingleShot(true);
+  search(QStringList() << directory_, true);
 }
 QtFinderWindow::~QtFinderWindow() noexcept {}
 
@@ -38,12 +51,13 @@ void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords) {
   /// If the user no longer enters, a delay will trigger the search.
   delayTimer_.stop();
   if (keyWords_.empty()) {
+    search(QStringList() << directory_, true);
     return;
   }
   delayTimer_.start(searchDelay_);
 }
 
-void QtFinderWindow::search(const QStringList &keywords) {
+void QtFinderWindow::search(const QStringList &keywords, bool depth) {
   uiWidget.listWidget->clear();
   killProcess(fd_);
   killProcess(rg_);
@@ -53,13 +67,23 @@ void QtFinderWindow::search(const QStringList &keywords) {
   rg_.start("rg", rgPattern(keywords));
   rg_.waitForStarted();
 
-  fd_.start("fd", QStringList() << "-p" << fdPattern(keywords) << directory_);
+  QStringList fdArgs;
+  if (depth) {
+    fdArgs << "-d"
+           << "1"
+           << "-p" << keywords << directory_;
+  } else {
+    fdArgs << "-p" << fdPattern(keywords) << directory_;
+  }
+  fd_.start("fd", fdArgs);
   fd_.waitForStarted();
+  qDebug() << fd_.arguments();
 }
 
 void QtFinderWindow::onDirectoryChanged(const QString &directory) {
   directory_ = directory;
   uiWidget.promptLabel->setText(directory_);
+  search(QStringList() << directory, true);
 }
 
 static QString fdPattern(const QStringList &keywords) {

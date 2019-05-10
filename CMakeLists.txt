@@ -18,6 +18,8 @@ set(src-files
   ${ui_files}
   "./src/main.cpp"
   "./include/SearchLineEdit.h"
+  "./include/QuickfixWidget.h"
+  "./src/QuickfixWidget.cpp"
   "./src/SearchLineEdit.cpp"
   "./src/QtFinderWindow.cpp"
   )

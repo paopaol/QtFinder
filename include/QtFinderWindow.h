@@ -15,7 +15,7 @@ public:
 
 private slots:
   void onSearchKeyWordsChanged(const QStringList &keyWords);
-  void search(const QStringList &keyWords);
+  void search(const QStringList &keyWords, bool depth = false);
   void onDirectoryChanged(const QString &directory);
 
 private:
@@ -25,10 +25,10 @@ private:
 
   /**@brief Delay in triggering search behavior after entering a keyword
    */
-  int searchDelay_{700};
+  int searchDelay_{400};
   QTimer delayTimer_;
   QStringList keyWords_;
-  QString directory_;
+  QString directory_{"~"};
 };
 
 #endif /* QTFINDERWINDOW_H */
