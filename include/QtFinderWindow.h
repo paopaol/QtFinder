@@ -19,7 +19,7 @@ private slots:
   void onDirectoryChanged(const QString &directory);
 
 private:
-  Ui::Widget uiWidget;
+  Ui::Widget ui;
   QProcess fd_;
   QProcess rg_;
 
