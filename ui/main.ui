@@ -32,7 +32,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="QuickfixWidget" name="listWidget"/>
+    <widget class="QuickfixWidget" name="quickfixWidget"/>
    </item>
   </layout>
  </widget>

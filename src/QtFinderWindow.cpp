@@ -20,19 +20,19 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   connect(ui.searchLineEdit, &SearchLineEdit::directoryChanged, this,
           &QtFinderWindow::onDirectoryChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
-    ui.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
+    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
   });
   connect(ui.searchLineEdit, &SearchLineEdit::ctrlPrevPressed, this, [&]() {
-    ui.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
+    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
   });
 
   connect(&rg_, &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
     while (rg_.canReadLine()) {
       QString line = rg_.readLine();
-      ui.listWidget->addItem(line);
+      ui.quickfixWidget->addItem(line);
     }
-    ui.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
+    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
   });
   connect(&rg_, &QProcess::readyReadStandardError, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
@@ -58,7 +58,7 @@ void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords) {
 }
 
 void QtFinderWindow::search(const QStringList &keywords) {
-  ui.listWidget->clear();
+  ui.quickfixWidget->clear();
   killProcess(fd_);
   killProcess(rg_);
 
@@ -79,7 +79,7 @@ void QtFinderWindow::onDirectoryChanged(const QString &directory) {
   directory_ = directory;
   ui.promptLabel->setText(directory_);
   auto entrys = directoryEntryList(directory_);
-  ui.listWidget->addItems(entrys);
+  ui.quickfixWidget->addItems(entrys);
 }
 
 static QString fdPattern(const QStringList &keywords) {
