@@ -26,7 +26,7 @@ set(src-files
 
 add_executable(qt_finder ${src-files})
 target_include_directories(qt_finder PRIVATE "./include" ${CMAKE_BINARY_DIR})
-target_link_libraries(qt_finder Qt5::Core Qt5::Widgets Qt5::Gui)
+target_link_libraries(qt_finder Qt5::Core Qt5::Widgets Qt5::Gui stdc++fs)
 
 
 

@@ -2,6 +2,9 @@
 #include <QKeyEvent>
 #include <QRegExp>
 #include <SearchLineEdit.h>
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem::v1;
 
 SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
   connect(this, &QLineEdit::textEdited, this,
@@ -27,12 +30,13 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
   list.pop_front();
 
   /// first, test is a absolute path?
-  QDir dir(key);
-  if (dir.exists() && QDir::isAbsolutePath(key)) {
+  fs::path dir(key.toStdString());
+  if (fs::exists(dir) && fs::is_directory(dir) && dir.is_absolute() || dir == "~") {
     clear();
     emit directoryChanged(key);
     return;
   }
+
   if (!validateKeywords(list)) {
     return;
   }
@@ -52,8 +56,8 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
 
 bool SearchLineEdit::validateKeywords(const QStringList &keywords) {
   /// must input at least 3 chars
-  if (keywords.front().size() < 3) {
-    setPlaceholderText("at least 3 chars");
+  if (keywords.isEmpty() || keywords.front().size() < 3) {
+    // setPlaceholderText("at least 3 chars");
     return false;
   }
   return true;
@@ -79,6 +83,7 @@ void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
   case Qt::Key_K: {
     if (event->modifiers() == Qt::ControlModifier) {
       emit ctrlPrevPressed();
+      return;
     }
     break;
   }
