@@ -6,7 +6,7 @@
 class SearchLineEdit : public QLineEdit {
   Q_OBJECT
 public:
-  enum class KeywordsType { kQuickfix, kFd, kRg };
+  enum class SearchRequest { kQuickfix, kFd, kRg };
   //! Default constructor
   SearchLineEdit(QWidget *parent = nullptr);
   //! Copy constructor
@@ -25,7 +25,7 @@ signals:
    * @details the input key word length must >= 3 chars
    * @return void
    */
-  void searchKeyWordsChanged(const QStringList &keywords, KeywordsType type);
+  void searchKeyWordsChanged(const QStringList &keywords, SearchRequest type);
   /**@brief search line edit buffer is empty
    */
   void keywordsEmpty();

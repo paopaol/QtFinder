@@ -11,7 +11,7 @@ SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
           &SearchLineEdit::parseSearchPattern);
 }
 
-SearchLineEdit::~SearchLineEdit() {}
+SearchLineEdit::~SearchLineEdit() noexcept {}
 
 void SearchLineEdit::parseSearchPattern(const QString &text) {
   /// escape whitespace
@@ -31,7 +31,7 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
 
   /// first, test is a absolute path?
   fs::path dir(key.toStdString());
-  if (fs::exists(dir) && fs::is_directory(dir) && dir.is_absolute() ||
+  if ((fs::exists(dir) && fs::is_directory(dir) && dir.is_absolute()) ||
       dir == "~") {
     clear();
     emit directoryChanged(key);
@@ -43,16 +43,16 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
   }
   /// second, test is a fd request?
   if (key == ":fd") {
-    emit searchKeyWordsChanged(list, KeywordsType::kFd);
+    emit searchKeyWordsChanged(list, SearchRequest::kFd);
     return;
   }
   /// third, test is a rg request?
   if (key == ":rg") {
-    emit searchKeyWordsChanged(list, KeywordsType::kQuickfix);
+    emit searchKeyWordsChanged(list, SearchRequest::kQuickfix);
     return;
   }
   /// now, it is a quickfix request
-  return searchKeyWordsChanged(list, KeywordsType::kQuickfix);
+  return searchKeyWordsChanged(list, SearchRequest::kQuickfix);
 }
 
 bool SearchLineEdit::validateKeywords(const QStringList &keywords) {

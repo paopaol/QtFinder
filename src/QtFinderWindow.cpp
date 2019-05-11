@@ -49,17 +49,17 @@ void QtFinderWindow::show() {
   listDirectory();
 }
 void QtFinderWindow::onSearchKeyWordsChanged(
-    const QStringList &keywords, SearchLineEdit::KeywordsType type) {
+    const QStringList &keywords, SearchLineEdit::SearchRequest type) {
   switch (type) {
-  case SearchLineEdit::KeywordsType::kFd: {
+  case SearchLineEdit::SearchRequest::kFd: {
     // fdSearch(keywords);
     break;
   }
-  case SearchLineEdit::KeywordsType::kRg: {
+  case SearchLineEdit::SearchRequest::kRg: {
     // rgSearch(keywords);
     break;
   }
-  case SearchLineEdit::KeywordsType::kQuickfix: {
+  case SearchLineEdit::SearchRequest::kQuickfix: {
     // quickfixSearch(keywords);
     break;
   }

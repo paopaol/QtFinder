@@ -17,7 +17,7 @@ public:
 
 private slots:
   void onSearchKeyWordsChanged(const QStringList &keyWords,
-                               SearchLineEdit::KeywordsType type);
+                               SearchLineEdit::SearchRequest type);
   void search(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
   void listDirectory(const QString &directory = "~");
