@@ -20,7 +20,7 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   connect(ui.searchLineEdit, &SearchLineEdit::directoryChanged, this,
           &QtFinderWindow::onDirectoryChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
-          [&]() { listDirectory("~"); });
+          [&]() { listDirectory(directory_); });
   connect(ui.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
     ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
   });
@@ -100,7 +100,7 @@ void QtFinderWindow::search(const QStringList &keywords) {
 
 void QtFinderWindow::onDirectoryChanged(const QString &directory) {
   directory_ = directory;
-  listDirectory();
+  listDirectory(directory_);
 }
 
 void QtFinderWindow::listDirectory(const QString &directory) {

@@ -32,7 +32,7 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
   /// first, test is a absolute path?
   fs::path dir(key.toStdString());
   if ((fs::exists(dir) && fs::is_directory(dir) && dir.is_absolute()) ||
-      dir == "~") {
+      (dir == "~")) {
     clear();
     emit directoryChanged(key);
     return;
