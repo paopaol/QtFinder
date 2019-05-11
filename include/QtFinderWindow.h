@@ -13,10 +13,14 @@ public:
   QtFinderWindow &operator=(const QtFinderWindow &other) = delete;
   virtual ~QtFinderWindow() noexcept;
 
+  void show();
+
 private slots:
-  void onSearchKeyWordsChanged(const QStringList &keyWords);
+  void onSearchKeyWordsChanged(const QStringList &keyWords,
+                               SearchLineEdit::KeywordsType type);
   void search(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
+  void listDirectory(const QString &directory = "~");
 
 private:
   Ui::Widget ui;

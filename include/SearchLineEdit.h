@@ -6,6 +6,7 @@
 class SearchLineEdit : public QLineEdit {
   Q_OBJECT
 public:
+  enum class KeywordsType { kQuickfix, kFd, kRg };
   //! Default constructor
   SearchLineEdit(QWidget *parent = nullptr);
   //! Copy constructor
@@ -24,14 +25,27 @@ signals:
    * @details the input key word length must >= 3 chars
    * @return void
    */
-  void searchKeyWordsChanged(const QStringList &keywords);
+  void searchKeyWordsChanged(const QStringList &keywords, KeywordsType type);
+  /**@brief search line edit buffer is empty
+   */
+  void keywordsEmpty();
+  /**
+   * @name directoryChanged find in directory changed
+   * @param directory  directory
+   * @return void
+   */
   void directoryChanged(const QString &directory);
   void tabKeyPressed();
+  /**@brief ctrl-n/j/PgUp
+   */
   void ctrlNextPressed();
+  /**@brief ctrl-p/k/PgDn
+   */
   void ctrlPrevPressed();
 
 private:
   void parseSearchPattern(const QString &text);
+  bool validateKeywords(const QStringList &keywords);
 };
 
 #endif /* INPUT_BOX_H */

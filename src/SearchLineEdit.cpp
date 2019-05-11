@@ -14,28 +14,49 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
   /// escape whitespace
   auto line = text.trimmed();
   if (line.isEmpty()) {
-    emit searchKeyWordsChanged(QStringList());
+    emit keywordsEmpty();
     return;
   }
   QStringList list = text.split(QRegExp("\\s+"));
   if (list.empty()) {
+    emit keywordsEmpty();
     return;
   }
 
   auto key = list.front();
+  list.pop_front();
+
+  /// first, test is a absolute path?
   QDir dir(key);
   if (dir.exists() && QDir::isAbsolutePath(key)) {
     clear();
     emit directoryChanged(key);
     return;
   }
-
-  /// must input at least 3 chars
-  if (list.front().size() < 3) {
-    setPlaceholderText("at least 3 chars");
+  if (!validateKeywords(list)) {
     return;
   }
-  emit searchKeyWordsChanged(list);
+  /// second, test is a fd request?
+  if (key == ":fd") {
+    emit searchKeyWordsChanged(list, KeywordsType::kFd);
+    return;
+  }
+  /// third, test is a rg request?
+  if (key == ":rg") {
+    emit searchKeyWordsChanged(list, KeywordsType::kQuickfix);
+    return;
+  }
+  /// now, it is a quickfix request
+  return searchKeyWordsChanged(list, KeywordsType::kQuickfix);
+}
+
+bool SearchLineEdit::validateKeywords(const QStringList &keywords) {
+  /// must input at least 3 chars
+  if (keywords.front().size() < 3) {
+    setPlaceholderText("at least 3 chars");
+    return false;
+  }
+  return true;
 }
 
 void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
@@ -44,6 +65,7 @@ void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
     emit tabKeyPressed();
     return;
   }
+  case Qt::Key_Down:
   case Qt::Key_N:
   case Qt::Key_J: {
     if (event->modifiers() == Qt::ControlModifier) {
@@ -52,6 +74,7 @@ void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
     }
     break;
   }
+  case Qt::Key_Up:
   case Qt::Key_P:
   case Qt::Key_K: {
     if (event->modifiers() == Qt::ControlModifier) {

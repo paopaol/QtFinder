@@ -19,6 +19,8 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
           &QtFinderWindow::onSearchKeyWordsChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::directoryChanged, this,
           &QtFinderWindow::onDirectoryChanged);
+  connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
+          [&]() { listDirectory("~"); });
   connect(ui.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
     ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
   });
@@ -39,11 +41,32 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
     QString line = textCodec->fromUnicode(rg_.readAllStandardError());
     qDebug() << line;
   });
-  search(QStringList() << directory_);
 }
 QtFinderWindow::~QtFinderWindow() noexcept {}
 
-void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords) {
+void QtFinderWindow::show() {
+  QWidget::show();
+  listDirectory();
+}
+void QtFinderWindow::onSearchKeyWordsChanged(
+    const QStringList &keywords, SearchLineEdit::KeywordsType type) {
+  switch (type) {
+  case SearchLineEdit::KeywordsType::kFd: {
+    // fdSearch(keywords);
+    break;
+  }
+  case SearchLineEdit::KeywordsType::kRg: {
+    // rgSearch(keywords);
+    break;
+  }
+  case SearchLineEdit::KeywordsType::kQuickfix: {
+    // quickfixSearch(keywords);
+    break;
+  }
+  default:
+    break;
+  }
+
   qDebug() << keywords;
   keyWords_ = keywords;
 
@@ -77,8 +100,14 @@ void QtFinderWindow::search(const QStringList &keywords) {
 
 void QtFinderWindow::onDirectoryChanged(const QString &directory) {
   directory_ = directory;
-  ui.promptLabel->setText(directory_);
-  auto entrys = directoryEntryList(directory_);
+  listDirectory();
+}
+
+void QtFinderWindow::listDirectory(const QString &directory) {
+  ui.quickfixWidget->clear();
+  ui.promptLabel->setText(directory);
+  auto entrys =
+      directoryEntryList(directory == "~" ? QDir::homePath() : directory);
   ui.quickfixWidget->addItems(entrys);
 }
 
