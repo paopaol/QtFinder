@@ -18,12 +18,12 @@ public:
 protected:
   void keyPressEvent(QKeyEvent *) override;
 
+signals:
   /**
    * @brief emited when search key words changed
    * @details the input key word length must >= 3 chars
    * @return void
    */
-signals:
   void searchKeyWordsChanged(const QStringList &keywords);
   void directoryChanged(const QString &directory);
   void tabKeyPressed();
