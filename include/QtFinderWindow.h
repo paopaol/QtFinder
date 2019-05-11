@@ -15,7 +15,7 @@ public:
 
 private slots:
   void onSearchKeyWordsChanged(const QStringList &keyWords);
-  void search(const QStringList &keyWords, bool depth = false);
+  void search(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
 
 private:

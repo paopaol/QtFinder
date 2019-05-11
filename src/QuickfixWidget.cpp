@@ -3,12 +3,12 @@
 
 #include <QVBoxLayout>
 
-QuickfixWidget::QuickfixWidget(const QWidget *parent) {}
+QuickfixWidget::QuickfixWidget(QWidget *parent) : QListWidget(parent) {}
 
 QuickfixWidget::~QuickfixWidget() noexcept {}
 
 void QuickfixWidget::clear() {
-  clear();
+  QListWidget::clear();
   currentRow_ = -1;
 }
 

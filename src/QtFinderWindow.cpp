@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QDir>
 #include <QStringListModel>
 #include <QTextCodec>
 #include <QtFinderWindow.h>
@@ -6,6 +7,7 @@
 static QString fdPattern(const QStringList &keywords);
 static QStringList rgPattern(const QStringList &keywords);
 static void killProcess(QProcess &process);
+static QStringList directoryEntryList(const QString &directory);
 
 QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   ui.setupUi(this);
@@ -17,14 +19,12 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
           &QtFinderWindow::onSearchKeyWordsChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::directoryChanged, this,
           &QtFinderWindow::onDirectoryChanged);
-  connect(
-      ui.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
-        ui.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
-      });
-  connect(
-      ui.searchLineEdit, &SearchLineEdit::ctrlPrevPressed, this, [&]() {
-        ui.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
-      });
+  connect(ui.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
+    ui.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
+  });
+  connect(ui.searchLineEdit, &SearchLineEdit::ctrlPrevPressed, this, [&]() {
+    ui.listWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
+  });
 
   connect(&rg_, &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
@@ -39,7 +39,7 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
     QString line = textCodec->fromUnicode(rg_.readAllStandardError());
     qDebug() << line;
   });
-  search(QStringList() << directory_, true);
+  search(QStringList() << directory_);
 }
 QtFinderWindow::~QtFinderWindow() noexcept {}
 
@@ -51,13 +51,13 @@ void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords) {
   /// If the user no longer enters, a delay will trigger the search.
   delayTimer_.stop();
   if (keyWords_.empty()) {
-    search(QStringList() << directory_, true);
+    search(QStringList() << directory_);
     return;
   }
   delayTimer_.start(searchDelay_);
 }
 
-void QtFinderWindow::search(const QStringList &keywords, bool depth) {
+void QtFinderWindow::search(const QStringList &keywords) {
   ui.listWidget->clear();
   killProcess(fd_);
   killProcess(rg_);
@@ -68,13 +68,8 @@ void QtFinderWindow::search(const QStringList &keywords, bool depth) {
   rg_.waitForStarted();
 
   QStringList fdArgs;
-  if (depth) {
-    fdArgs << "-d"
-           << "1"
-           << "-p" << keywords << directory_;
-  } else {
-    fdArgs << "-p" << fdPattern(keywords) << directory_;
-  }
+  fdArgs << "-p" << fdPattern(keywords) << directory_;
+
   fd_.start("fd", fdArgs);
   fd_.waitForStarted();
   qDebug() << fd_.arguments();
@@ -83,7 +78,8 @@ void QtFinderWindow::search(const QStringList &keywords, bool depth) {
 void QtFinderWindow::onDirectoryChanged(const QString &directory) {
   directory_ = directory;
   ui.promptLabel->setText(directory_);
-  search(QStringList() << directory, true);
+  auto entrys = directoryEntryList(directory_);
+  ui.listWidget->addItems(entrys);
 }
 
 static QString fdPattern(const QStringList &keywords) {
@@ -113,4 +109,9 @@ static void killProcess(QProcess &process) {
     process.kill();
     process.waitForFinished();
   }
+}
+
+static QStringList directoryEntryList(const QString &directory) {
+  QDir dir(directory);
+  return dir.entryList();
 }

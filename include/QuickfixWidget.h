@@ -10,7 +10,7 @@ class QuickfixWidget : public QListWidget {
 public:
   enum class SelectOpt { kUp, kDown, kKeep };
 
-  QuickfixWidget(const QWidget *parent = nullptr);
+  QuickfixWidget(QWidget *parent = nullptr);
   QuickfixWidget(const QuickfixWidget &other) = delete;
   QuickfixWidget &operator=(const QuickfixWidget &other) = delete;
   virtual ~QuickfixWidget() noexcept;

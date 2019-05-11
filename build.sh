@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/opt/Qt5.11.1/5.11.1/gcc_64
