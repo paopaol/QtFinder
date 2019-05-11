@@ -46,11 +46,6 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
     emit searchKeyWordsChanged(list, SearchRequest::kFd);
     return;
   }
-  /// third, test is a rg request?
-  if (key == ":rg") {
-    emit searchKeyWordsChanged(list, SearchRequest::kQuickfix);
-    return;
-  }
   /// now, it is a quickfix request
   return searchKeyWordsChanged(list, SearchRequest::kQuickfix);
 }

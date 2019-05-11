@@ -6,7 +6,7 @@
 class SearchLineEdit : public QLineEdit {
   Q_OBJECT
 public:
-  enum class SearchRequest { kQuickfix, kFd, kRg };
+  enum class SearchRequest { kQuickfix, kFd };
   //! Default constructor
   SearchLineEdit(QWidget *parent = nullptr);
   //! Copy constructor

@@ -55,10 +55,6 @@ void QtFinderWindow::onSearchKeyWordsChanged(
     // fdSearch(keywords);
     break;
   }
-  case SearchLineEdit::SearchRequest::kRg: {
-    // rgSearch(keywords);
-    break;
-  }
   case SearchLineEdit::SearchRequest::kQuickfix: {
     // quickfixSearch(keywords);
     break;
