@@ -4,7 +4,6 @@
 #include <ui_main.h>
 
 #include <QProcess>
-#include <QTimer>
 
 class QtFinderWindow : public QWidget {
 public:
@@ -27,11 +26,6 @@ private:
   QProcess fd_;
   QProcess rg_;
 
-  /**@brief Delay in triggering search behavior after entering a keyword
-   */
-  int searchDelay_{400};
-  QTimer delayTimer_;
-  QStringList keyWords_;
   QString directory_{"~"};
 };
 

@@ -12,9 +12,6 @@ static QStringList directoryEntryList(const QString &directory);
 QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   ui.setupUi(this);
 
-  connect(&delayTimer_, &QTimer::timeout, this, [&]() { search(keyWords_); });
-  delayTimer_.setSingleShot(true);
-
   connect(ui.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged, this,
           &QtFinderWindow::onSearchKeyWordsChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::directoryChanged, this,
@@ -62,18 +59,7 @@ void QtFinderWindow::onSearchKeyWordsChanged(
   default:
     break;
   }
-
   qDebug() << keywords;
-  keyWords_ = keywords;
-
-  /// canel search timer,and restart the timer
-  /// If the user no longer enters, a delay will trigger the search.
-  delayTimer_.stop();
-  if (keyWords_.empty()) {
-    search(QStringList() << directory_);
-    return;
-  }
-  delayTimer_.start(searchDelay_);
 }
 
 void QtFinderWindow::search(const QStringList &keywords) {

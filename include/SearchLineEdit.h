@@ -2,6 +2,7 @@
 #define INPUT_BOX_H
 
 #include <QLineEdit>
+#include <QTimer>
 
 class SearchLineEdit : public QLineEdit {
   Q_OBJECT
@@ -46,6 +47,12 @@ signals:
 private:
   void parseSearchPattern(const QString &text);
   bool validateKeywords(const QStringList &keywords);
+
+  QStringList keywords_;
+  /**@brief Delay in triggering search behavior after entering a keyword
+   */
+  int searchDelay_{600};
+  QTimer delayTimer_;
 };
 
 #endif /* INPUT_BOX_H */

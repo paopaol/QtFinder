@@ -9,27 +9,29 @@ namespace fs = std::experimental::filesystem::v1;
 SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
   connect(this, &QLineEdit::textEdited, this,
           &SearchLineEdit::parseSearchPattern);
+  connect(&delayTimer_, &QTimer::timeout, this,
+          [&]() { emit searchKeyWordsChanged(keywords_, SearchRequest::kFd); });
+  delayTimer_.setSingleShot(true);
 }
 
 SearchLineEdit::~SearchLineEdit() noexcept {}
 
 void SearchLineEdit::parseSearchPattern(const QString &text) {
+  /// canel search timer,and restart the timer
+  /// If the user no longer enters, a delay will trigger the search.
+  delayTimer_.stop();
+
   /// escape whitespace
-  auto line = text.trimmed();
-  if (line.isEmpty()) {
-    emit keywordsEmpty();
-    return;
-  }
-  QStringList list = text.split(QRegExp("\\s+"));
-  if (list.empty()) {
+  auto line = text.trimmed().replace(QRegExp("\\s+"), " ");
+  QStringList list = line.split(" ");
+  if (line.isEmpty() || list.empty()) {
     emit keywordsEmpty();
     return;
   }
 
   auto key = list.front();
-  list.pop_front();
 
-  /// first, test is a absolute path?
+  /// first, test is a absolute path or home?
   fs::path dir(key.toStdString());
   if ((fs::exists(dir) && fs::is_directory(dir) && dir.is_absolute()) ||
       (dir == "~")) {
@@ -43,7 +45,12 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
   }
   /// second, test is a fd request?
   if (key == ":fd") {
-    emit searchKeyWordsChanged(list, SearchRequest::kFd);
+    list.pop_front();
+    if (list.isEmpty()) {
+      return;
+    }
+    keywords_ = list;
+    delayTimer_.start(searchDelay_);
     return;
   }
   /// now, it is a quickfix request
