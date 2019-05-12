@@ -72,7 +72,10 @@ void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
     emit tabKeyPressed();
     return;
   }
-  case Qt::Key_Down:
+  case Qt::Key_Down: {
+    emit ctrlNextPressed();
+    return;
+  }
   case Qt::Key_N:
   case Qt::Key_J: {
     if (event->modifiers() == Qt::ControlModifier) {
@@ -81,7 +84,10 @@ void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
     }
     break;
   }
-  case Qt::Key_Up:
+  case Qt::Key_Up: {
+    emit ctrlPrevPressed();
+    return;
+  }
   case Qt::Key_P:
   case Qt::Key_K: {
     if (event->modifiers() == Qt::ControlModifier) {
