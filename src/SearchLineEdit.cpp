@@ -44,7 +44,7 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
     return;
   }
   /// second, test is a fd request?
-  if (key == ":fd") {
+  if (key.toLower() == ":fd") {
     list.pop_front();
     if (list.isEmpty()) {
       return;
