@@ -101,3 +101,4 @@ void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
   }
   QLineEdit::keyPressEvent(event);
 }
+bool SearchLineEdit::focusNextPrevChild(bool next) { return false; }

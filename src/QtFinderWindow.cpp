@@ -45,6 +45,7 @@ void QtFinderWindow::show() {
   QWidget::show();
   listDirectory();
 }
+
 void QtFinderWindow::onSearchKeyWordsChanged(
     const QStringList &keywords, SearchLineEdit::SearchRequest type) {
   switch (type) {
