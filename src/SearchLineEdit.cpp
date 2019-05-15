@@ -68,6 +68,8 @@ bool SearchLineEdit::validateKeywords(const QStringList &keywords) {
 
 void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
   switch (event->key()) {
+  case Qt::Key_Enter:
+  case Qt::Key_Return:
   case Qt::Key_Tab: {
     emit tabKeyPressed();
     return;

@@ -17,9 +17,10 @@ public:
 private slots:
   void onSearchKeyWordsChanged(const QStringList &keyWords,
                                SearchLineEdit::SearchRequest type);
+  void onTabKeyPressed();
   void search(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
-  void listDirectory(const QString &directory = "~");
+  void listDirectory();
 
 private:
   Ui::Widget ui;

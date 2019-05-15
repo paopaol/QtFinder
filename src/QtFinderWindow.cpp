@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QDir>
+#include <QFileInfo>
 #include <QStringListModel>
 #include <QTextCodec>
 #include <QtFinderWindow.h>
@@ -17,13 +18,15 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   connect(ui.searchLineEdit, &SearchLineEdit::directoryChanged, this,
           &QtFinderWindow::onDirectoryChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
-          [&]() { listDirectory(directory_); });
+          [&]() { listDirectory(); });
   connect(ui.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
     ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
   });
   connect(ui.searchLineEdit, &SearchLineEdit::ctrlPrevPressed, this, [&]() {
     ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
   });
+  connect(ui.searchLineEdit, &SearchLineEdit::tabKeyPressed, this,
+          &QtFinderWindow::onTabKeyPressed);
 
   connect(&rg_, &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
@@ -63,6 +66,21 @@ void QtFinderWindow::onSearchKeyWordsChanged(
   qDebug() << keywords;
 }
 
+void QtFinderWindow::onTabKeyPressed() {
+  if (ui.quickfixWidget->count() == 0) {
+    return;
+  }
+  auto item = ui.quickfixWidget->currentItem();
+  auto text = item->text();
+  QFileInfo fileInfo(directory_ + "/" + text);
+  if (!fileInfo.isDir()) {
+    return;
+  }
+  directory_ = fileInfo.absoluteFilePath();
+
+  listDirectory();
+}
+
 void QtFinderWindow::search(const QStringList &keywords) {
   ui.quickfixWidget->clear();
   killProcess(fd_);
@@ -82,16 +100,22 @@ void QtFinderWindow::search(const QStringList &keywords) {
 }
 
 void QtFinderWindow::onDirectoryChanged(const QString &directory) {
+  QDir dir(directory);
+  if (!dir.isAbsolute()) {
+    return;
+  }
   directory_ = directory;
-  listDirectory(directory_);
+  listDirectory();
 }
 
-void QtFinderWindow::listDirectory(const QString &directory) {
+void QtFinderWindow::listDirectory() {
+  directory_ = directory_ == "~" ? QDir::homePath() : directory_;
+
   ui.quickfixWidget->clear();
-  ui.promptLabel->setText(directory);
-  auto entrys =
-      directoryEntryList(directory == "~" ? QDir::homePath() : directory);
+  ui.promptLabel->setText(directory_);
+  auto entrys = directoryEntryList(directory_);
   ui.quickfixWidget->addItems(entrys);
+  ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
 }
 
 static QString fdPattern(const QStringList &keywords) {
@@ -125,5 +149,7 @@ static void killProcess(QProcess &process) {
 
 static QStringList directoryEntryList(const QString &directory) {
   QDir dir(directory);
-  return dir.entryList();
+  QDir::Filters filters = QDir::Dirs | QDir::Files;
+  filters |= dir.isRoot() ? QDir::NoDotAndDotDot : QDir::NoDot;
+  return dir.entryList(filters);
 }
