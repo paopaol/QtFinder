@@ -18,7 +18,7 @@ private slots:
   void onSearchKeyWordsChanged(const QStringList &keyWords,
                                SearchLineEdit::SearchRequest type);
   void onTabKeyPressed();
-  void search(const QStringList &keyWords);
+  void fdSearch(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
   void listDirectory();
 

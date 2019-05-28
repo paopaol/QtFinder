@@ -53,7 +53,7 @@ void QtFinderWindow::onSearchKeyWordsChanged(
     const QStringList &keywords, SearchLineEdit::SearchRequest type) {
   switch (type) {
   case SearchLineEdit::SearchRequest::kFd: {
-    // fdSearch(keywords);
+    fdSearch(keywords);
     break;
   }
   case SearchLineEdit::SearchRequest::kQuickfix: {
@@ -81,7 +81,7 @@ void QtFinderWindow::onTabKeyPressed() {
   listDirectory();
 }
 
-void QtFinderWindow::search(const QStringList &keywords) {
+void QtFinderWindow::fdSearch(const QStringList &keywords) {
   ui.quickfixWidget->clear();
   killProcess(fd_);
   killProcess(rg_);
