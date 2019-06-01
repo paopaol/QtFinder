@@ -15,8 +15,6 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
 
   connect(ui.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged, this,
           &QtFinderWindow::onSearchKeyWordsChanged);
-  connect(ui.searchLineEdit, &SearchLineEdit::directoryChanged, this,
-          &QtFinderWindow::onDirectoryChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
           [&]() { listDirectory(); });
   connect(ui.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
@@ -58,6 +56,10 @@ void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords,
   }
   case QtFinder::Cmd::kQuickfix: {
     // quickfixSearch(keywords);
+    break;
+  }
+  case QtFinder::Cmd::kDirectoryChanged: {
+    onDirectoryChanged(keywords.front());
     break;
   }
   default:

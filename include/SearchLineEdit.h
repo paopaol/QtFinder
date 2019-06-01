@@ -3,7 +3,15 @@
 
 #include "QtFinderCmd.h"
 #include <QLineEdit>
+#include <QMap>
 #include <QTimer>
+
+template <class T> inline QList<T> &cdrList(QList<T> &list) {
+  if (list.size() > 0) {
+    list.pop_front();
+  }
+  return list;
+}
 
 class SearchLineEdit : public QLineEdit {
   Q_OBJECT
@@ -31,12 +39,6 @@ signals:
   /**@brief search line edit buffer is empty
    */
   void keywordsEmpty();
-  /**
-   * @name directoryChanged find in directory changed
-   * @param directory  directory
-   * @return void
-   */
-  void directoryChanged(const QString &directory);
   void tabKeyPressed();
   /**@brief ctrl-n/j/PgUp
    */
@@ -46,14 +48,23 @@ signals:
   void ctrlPrevPressed();
 
 private:
-  void parseSearchPattern(const QString &text);
-  bool validateKeywords(const QStringList &keywords);
+  typedef std::function<void(const QStringList &keywords)> cmdEmiter;
+  void parseUserInput(const QString &text);
+  void emitQtFinderCmd(QStringList &keywords);
+
+  /**@brief if keywords is validate successed, then,it will
+     emit searchKeyWordsChanged signal with a @see QtFinder::Cmd
+   */
+  void fdCmdEmit(const QStringList &keywords);
+  void directoryCmdEmit(const QStringList &keywords);
+  void quickfixCmdEmit(const QStringList &keywords);
 
   QStringList keywords_;
   /**@brief Delay in triggering search behavior after entering a keyword
    */
   int searchDelay_{600};
   QTimer delayTimer_;
+  QMap<QString, cmdEmiter> cmdTable_;
 };
 
 #endif /* INPUT_BOX_H */
