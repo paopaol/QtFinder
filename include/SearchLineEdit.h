@@ -1,13 +1,13 @@
 #ifndef INPUT_BOX_H
 #define INPUT_BOX_H
 
+#include "QtFinderCmd.h"
 #include <QLineEdit>
 #include <QTimer>
 
 class SearchLineEdit : public QLineEdit {
   Q_OBJECT
 public:
-  enum class SearchRequest { kQuickfix, kFd };
   //! Default constructor
   SearchLineEdit(QWidget *parent = nullptr);
   //! Copy constructor
@@ -19,7 +19,7 @@ public:
 
 protected:
   void keyPressEvent(QKeyEvent *) override;
-  bool focusNextPrevChild(bool next)override;
+  bool focusNextPrevChild(bool next) override;
 
 signals:
   /**
@@ -27,7 +27,7 @@ signals:
    * @details the input key word length must >= 3 chars
    * @return void
    */
-  void searchKeyWordsChanged(const QStringList &keywords, SearchRequest type);
+  void searchKeyWordsChanged(const QStringList &keywords, QtFinder::Cmd cmd);
   /**@brief search line edit buffer is empty
    */
   void keywordsEmpty();

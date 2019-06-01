@@ -6,11 +6,15 @@
 
 namespace fs = std::experimental::filesystem::v1;
 
+typedef std::function<void(void)> commandParserHandler;
+
+static QMap<QtFinder::Cmd, commandParserHandler> cmdParserTable;
+
 SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
   connect(this, &QLineEdit::textEdited, this,
           &SearchLineEdit::parseSearchPattern);
   connect(&delayTimer_, &QTimer::timeout, this,
-          [&]() { emit searchKeyWordsChanged(keywords_, SearchRequest::kFd); });
+          [&]() { emit searchKeyWordsChanged(keywords_, QtFinder::Cmd::kFd); });
   delayTimer_.setSingleShot(true);
 }
 
@@ -54,7 +58,8 @@ void SearchLineEdit::parseSearchPattern(const QString &text) {
     return;
   }
   /// now, it is a quickfix request
-  return searchKeyWordsChanged(list, SearchRequest::kQuickfix);
+  emit searchKeyWordsChanged(list, QtFinder::Cmd::kQuickfix);
+  return;
 }
 
 bool SearchLineEdit::validateKeywords(const QStringList &keywords) {
