@@ -44,11 +44,13 @@ void SearchLineEdit::emitQtFinderCmd(QStringList &keywords) {
   auto key = keywords.front();
   if (isAbsDirOrHome(key)) {
     cmdString = ":directory";
+    keywords.prepend(cmdString);
   } else {
     cmdString = key.toLower();
   }
   if (!cmdTable_.contains(cmdString)) {
     cmdString = ":quickfix";
+    keywords.prepend(cmdString);
   }
   auto commandEmiter = cmdTable_.value(cmdString);
   commandEmiter(cdrList(keywords));
@@ -65,6 +67,7 @@ void SearchLineEdit::fdCmdEmit(const QStringList &keywords) {
 }
 
 void SearchLineEdit::directoryCmdEmit(const QStringList &keywords) {
+  clear();
   emit searchKeyWordsChanged(keywords, QtFinder::Cmd::kDirectoryChanged);
 }
 
