@@ -24,9 +24,13 @@ set(src-files
   "./src/QtFinderWindow.cpp"
   )
 
+if(CMAKE_COMPILER_IS_GNUCC)
+  set(linked_libries stdc++fs)
+endif()
+
 add_executable(qt_finder ${src-files})
 target_include_directories(qt_finder PRIVATE "./include" ${CMAKE_BINARY_DIR})
-target_link_libraries(qt_finder Qt5::Core Qt5::Widgets Qt5::Gui stdc++fs)
+target_link_libraries(qt_finder Qt5::Core Qt5::Widgets Qt5::Gui ${link_libraries})
 
 
 
