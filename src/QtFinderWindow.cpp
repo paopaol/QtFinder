@@ -103,9 +103,6 @@ void QtFinderWindow::fdSearch(const QStringList &keywords) {
 
 void QtFinderWindow::onDirectoryChanged(const QString &directory) {
   QDir dir(directory);
-  if (!dir.isAbsolute()) {
-    return;
-  }
   directory_ = directory;
   listDirectory();
 }
