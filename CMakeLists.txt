@@ -4,7 +4,9 @@ project(QtFinder)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+
+
+cmake_policy(SET CMP0071 NEW)
 
 find_package(Qt5 REQUIRED Core Widgets Gui)
 
@@ -18,14 +20,16 @@ set(src-files
   ${ui_files}
   "./src/main.cpp"
   "./include/SearchLineEdit.h"
+  "./src/SearchLineEdit.cpp"
   "./include/QuickfixWidget.h"
   "./src/QuickfixWidget.cpp"
-  "./src/SearchLineEdit.cpp"
   "./src/QtFinderWindow.cpp"
+  "./include/QtFinderWindow.h"
+  "./include/QThread11.h"
   )
 
 if(CMAKE_COMPILER_IS_GNUCC)
-  set(linked_libries stdc++fs)
+  set(inked_libries stdc++fs)
 endif()
 
 add_executable(qt_finder ${src-files})

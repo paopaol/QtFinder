@@ -32,13 +32,17 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
       QString line = rg_.readLine();
       ui.quickfixWidget->addItem(line);
     }
-    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
+    ui.quickfixWidget->scrollToBottom();
   });
   connect(&rg_, &QProcess::readyReadStandardError, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
     QString line = textCodec->fromUnicode(rg_.readAllStandardError());
     qDebug() << line;
   });
+  connect(&rg_, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this,
+          [&](int exitCode) { ui.quickfixWidget->scrollToTop(); });
+  ;
+  ui.quickfixWidget->setUniformItemSizes(true);
 }
 QtFinderWindow::~QtFinderWindow() noexcept {}
 
