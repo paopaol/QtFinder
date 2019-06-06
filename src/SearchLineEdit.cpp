@@ -58,7 +58,7 @@ void SearchLineEdit::emitQtFinderCmd(QStringList &keywords) {
 
 void SearchLineEdit::fdCmdEmit(const QStringList &keywords) {
   /// must input at least 3 chars
-  if (keywords.isEmpty() || keywords.front().size() < 3) {
+  if (keywords.isEmpty() || keywords.join("").size() < 3) {
     // setPlaceholderText("at least 3 chars");
     return;
   }
