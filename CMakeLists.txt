@@ -25,7 +25,6 @@ set(src-files
   "./src/QuickfixWidget.cpp"
   "./src/QtFinderWindow.cpp"
   "./include/QtFinderWindow.h"
-  "./include/QThread11.h"
   )
 
 if(CMAKE_COMPILER_IS_GNUCC)
