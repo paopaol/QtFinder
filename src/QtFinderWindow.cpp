@@ -19,6 +19,8 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
           [&]() { listDirectory(); });
   connect(ui.searchLineEdit, &SearchLineEdit::keyPressed, this,
           &QtFinderWindow::onKeyPressed);
+  connect(ui.quickfixWidget, &QuickfixWidget::keyPressed, this,
+          &QtFinderWindow::onKeyPressed);
   connect(&rg_, &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
     while (rg_.canReadLine()) {

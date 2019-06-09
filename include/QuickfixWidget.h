@@ -7,6 +7,7 @@ class QuickfixLabel;
 /**@brief quickfix is like vim quickfix
  */
 class QuickfixWidget : public QListWidget {
+  Q_OBJECT
 public:
   enum class SelectOpt { kUp, kDown, kKeep };
 
@@ -17,6 +18,18 @@ public:
 
   void clear();
   void updateCurrentRow(SelectOpt opt);
+
+signals:
+  /**@brief emited when some key pressed
+     ctrl+n/j will convert to down key
+     ctrl+p/k will convert to up key
+     enter/return/tab will convert to enter
+  */
+  void keyPressed(Qt::Key key);
+
+protected:
+  void keyPressEvent(QKeyEvent *) override;
+  bool focusNextPrevChild(bool next);
 
 private:
   int currentRow_{-1};
