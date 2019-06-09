@@ -39,13 +39,13 @@ signals:
   /**@brief search line edit buffer is empty
    */
   void keywordsEmpty();
-  void tabKeyPressed();
-  /**@brief ctrl-n/j/PgUp
+
+  /**@brief emited when some key pressed
+     ctrl+n/j will convert to down key
+     ctrl+p/k will convert to up key
+     enter/return/tab will convert to enter
    */
-  void ctrlNextPressed();
-  /**@brief ctrl-p/k/PgDn
-   */
-  void ctrlPrevPressed();
+  void keyPressed(Qt::Key key);
 
 private:
   typedef std::function<void(const QStringList &keywords)> cmdEmiter;

@@ -1,8 +1,8 @@
 #ifndef QTFINDERWINDOW_H
 #define QTFINDERWINDOW_H
 
-#include <ui_main.h>
 #include <QtFinderCmd.h>
+#include <ui_main.h>
 
 #include <QProcess>
 
@@ -17,7 +17,8 @@ public:
 
 private slots:
   void onSearchKeyWordsChanged(const QStringList &keyWords, QtFinder::Cmd cmd);
-  void onTabKeyPressed();
+  void onKeyPressed(Qt::Key key);
+  void onEnterKeyPressed();
   void fdSearch(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
   void listDirectory();

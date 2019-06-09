@@ -17,15 +17,8 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
           &QtFinderWindow::onSearchKeyWordsChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
           [&]() { listDirectory(); });
-  connect(ui.searchLineEdit, &SearchLineEdit::ctrlNextPressed, this, [&]() {
-    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
-  });
-  connect(ui.searchLineEdit, &SearchLineEdit::ctrlPrevPressed, this, [&]() {
-    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
-  });
-  connect(ui.searchLineEdit, &SearchLineEdit::tabKeyPressed, this,
-          &QtFinderWindow::onTabKeyPressed);
-
+  connect(ui.searchLineEdit, &SearchLineEdit::keyPressed, this,
+          &QtFinderWindow::onKeyPressed);
   connect(&rg_, &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
     while (rg_.canReadLine()) {
@@ -71,7 +64,26 @@ void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords,
   qDebug() << keywords;
 }
 
-void QtFinderWindow::onTabKeyPressed() {
+void QtFinderWindow::onKeyPressed(Qt::Key key) {
+  switch (key) {
+  case Qt::Key_Enter: {
+    onEnterKeyPressed();
+    break;
+  }
+  case Qt::Key_Down: {
+    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
+    break;
+  }
+  case Qt::Key_Up: {
+    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
+    break;
+  }
+  default:
+    break;
+  }
+}
+
+void QtFinderWindow::onEnterKeyPressed() {
   if (ui.quickfixWidget->count() == 0) {
     return;
   }
