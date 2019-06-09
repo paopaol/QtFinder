@@ -41,7 +41,6 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   });
   connect(&rg_, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this,
           [&](int exitCode) { ui.quickfixWidget->scrollToTop(); });
-  ;
   ui.quickfixWidget->setUniformItemSizes(true);
 }
 QtFinderWindow::~QtFinderWindow() noexcept {}
