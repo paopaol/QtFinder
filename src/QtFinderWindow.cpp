@@ -96,6 +96,9 @@ void QtFinderWindow::onEnterKeyPressed() {
     return;
   }
   auto item = ui.quickfixWidget->currentItem();
+  if (!item) {
+    return;
+  }
   auto text = item->text();
 
   /// the text maybe a relative path or a absolute path,
@@ -155,7 +158,6 @@ void QtFinderWindow::openDirectoryOfFile(const QString &filePath) {
   QUrl url = QUrl::fromLocalFile(dir);
   QProcess explorer;
   QString cmd = "explorer.exe /select, " + url.toString();
-  qDebug() << cmd;
   explorer.startDetached(cmd);
 #else
   dir = absPath.parent_path().string().c_str();
