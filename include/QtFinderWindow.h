@@ -22,6 +22,7 @@ private slots:
   void fdSearch(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
   void listDirectory();
+  void openDirectoryOfFile(const QString &path);
 
 private:
   Ui::Widget ui;

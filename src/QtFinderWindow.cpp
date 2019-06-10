@@ -1,9 +1,14 @@
 #include <QDebug>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
 #include <QStringListModel>
 #include <QTextCodec>
+#include <QUrl>
 #include <QtFinderWindow.h>
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem::v1;
 
 static QString fdPattern(const QStringList &keywords);
 static QStringList rgPattern(const QStringList &keywords);
@@ -25,6 +30,7 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
     while (rg_.canReadLine()) {
       QString line = rg_.readLine();
+      line = line.trimmed();
       ui.quickfixWidget->addItem(line);
     }
     ui.quickfixWidget->scrollToBottom();
@@ -91,8 +97,15 @@ void QtFinderWindow::onEnterKeyPressed() {
   }
   auto item = ui.quickfixWidget->currentItem();
   auto text = item->text();
-  QFileInfo fileInfo(directory_ + "/" + text);
+
+  /// the text maybe a relative path or a absolute path,
+  /// but we need convert relative path to absolute path
+  QFileInfo fileInfo(text);
+  if (!fileInfo.isAbsolute()) {
+    fileInfo = directory_ + "/" + text;
+  }
   if (!fileInfo.isDir()) {
+    openDirectoryOfFile(fileInfo.absoluteFilePath());
     return;
   }
   directory_ = fileInfo.absoluteFilePath();
@@ -132,6 +145,23 @@ void QtFinderWindow::listDirectory() {
   auto entrys = directoryEntryList(directory_);
   ui.quickfixWidget->addItems(entrys);
   ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
+}
+
+void QtFinderWindow::openDirectoryOfFile(const QString &filePath) {
+  fs::path absPath(filePath.toStdString());
+  QString dir;
+#ifdef Q_OS_WIN
+  dir = absPath.string().c_str();
+  QUrl url = QUrl::fromLocalFile(dir);
+  QProcess explorer;
+  QString cmd = "explorer.exe /select, " + url.toString();
+  qDebug() << cmd;
+  explorer.startDetached(cmd);
+#else
+  dir = absPath.parent_path().string().c_str();
+  QUrl url = QUrl::fromLocalFile(dir);
+  QDesktopServices::openUrl(url);
+#endif
 }
 
 static QString fdPattern(const QStringList &keywords) {
