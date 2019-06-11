@@ -1,3 +1,4 @@
+#include <Events.h>
 #include <QDir>
 #include <QKeyEvent>
 #include <QRegExp>
@@ -76,39 +77,10 @@ void SearchLineEdit::quickfixCmdEmit(const QStringList &keywords) {
 }
 
 void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
-  switch (event->key()) {
-  case Qt::Key_Enter:
-  case Qt::Key_Return:
-  case Qt::Key_Tab: {
-    emit keyPressed(Qt::Key_Enter);
+  auto key = key_press_event(event);
+  if (key != Qt::Key_unknown) {
+    emit keyPressed(key);
     return;
-  }
-  case Qt::Key_Down: {
-    emit keyPressed(Qt::Key_Down);
-    return;
-  }
-  case Qt::Key_N:
-  case Qt::Key_J: {
-    if (event->modifiers() == Qt::ControlModifier) {
-      emit keyPressed(Qt::Key_Down);
-      return;
-    }
-    break;
-  }
-  case Qt::Key_Up: {
-    emit keyPressed(Qt::Key_Up);
-    return;
-  }
-  case Qt::Key_P:
-  case Qt::Key_K: {
-    if (event->modifiers() == Qt::ControlModifier) {
-      emit keyPressed(Qt::Key_Up);
-      return;
-    }
-    break;
-  }
-  default:
-    break;
   }
   QLineEdit::keyPressEvent(event);
 }
