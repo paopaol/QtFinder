@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
+#include <QFileIconProvider>
 #include <QFileInfo>
 #include <QStringListModel>
 #include <QTextCodec>
@@ -14,6 +15,8 @@ static QString fdPattern(const QStringList &keywords);
 static QStringList rgPattern(const QStringList &keywords);
 static void killProcess(QProcess &process);
 static QStringList directoryEntryList(const QString &directory);
+static QListWidgetItem *createFileItem(const QString &path, const QString &text,
+                                       QListWidget *parent = nullptr);
 
 QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   ui.setupUi(this);
@@ -31,7 +34,7 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
     while (rg_.canReadLine()) {
       QString line = rg_.readLine();
       line = line.trimmed();
-      ui.quickfixWidget->addItem(line);
+      ui.quickfixWidget->addItem(createFileItem(line, line, ui.quickfixWidget));
     }
     ui.quickfixWidget->scrollToBottom();
   });
@@ -44,6 +47,7 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
           [&](int exitCode) { ui.quickfixWidget->scrollToTop(); });
   ui.quickfixWidget->setUniformItemSizes(true);
 }
+
 QtFinderWindow::~QtFinderWindow() noexcept {}
 
 void QtFinderWindow::show() {
@@ -146,7 +150,11 @@ void QtFinderWindow::listDirectory() {
   ui.quickfixWidget->clear();
   ui.promptLabel->setText(directory_);
   auto entrys = directoryEntryList(directory_);
-  ui.quickfixWidget->addItems(entrys);
+  for (auto &name : entrys) {
+    auto item =
+        createFileItem(directory_ + "/" + name, name, ui.quickfixWidget);
+    ui.quickfixWidget->addItem(item);
+  }
   ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
 }
 
@@ -200,4 +208,11 @@ static QStringList directoryEntryList(const QString &directory) {
   QDir::Filters filters = QDir::Dirs | QDir::Files;
   filters |= dir.isRoot() ? QDir::NoDotAndDotDot : QDir::NoDot;
   return dir.entryList(filters);
+}
+
+static QListWidgetItem *createFileItem(const QString &path, const QString &text,
+                                       QListWidget *parent) {
+  QIcon icon = QFileIconProvider().icon(QFileInfo(path));
+  QListWidgetItem *item = new QListWidgetItem(icon, text, parent);
+  return item;
 }

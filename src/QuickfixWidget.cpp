@@ -39,6 +39,7 @@ void QuickfixWidget::updateCurrentRow(SelectOpt opt) {
   }
 }
 
+
 void QuickfixWidget::keyPressEvent(QKeyEvent *event) {
   switch (event->key()) {
   case Qt::Key_Enter:
