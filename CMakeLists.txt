@@ -31,7 +31,13 @@ if(CMAKE_COMPILER_IS_GNUCC)
   set(inked_libries stdc++fs)
 endif()
 
-add_executable(qt_finder ${src-files})
+if(WIN32)
+  set(GUI_TYPE WIN32)
+elseif(APPLE)
+  set(GUI_TYPE APPLE)
+endif()
+
+add_executable(qt_finder ${GUI_TYPE} ${src-files})
 target_include_directories(qt_finder PRIVATE "./include" ${CMAKE_BINARY_DIR})
 target_link_libraries(qt_finder Qt5::Core Qt5::Widgets Qt5::Gui ${linked_libries})
 
