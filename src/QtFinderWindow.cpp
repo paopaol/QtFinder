@@ -151,10 +151,10 @@ void QtFinderWindow::listDirectory() {
   ui.promptLabel->setText(directory_);
   auto entrys = directoryEntryList(directory_);
   for (auto &name : entrys) {
-    fs::path absPath(directory_.toStdString());
-    absPath.append(name.toStdString());
-    auto item =
-        createFileItem(absPath.string().c_str(), name, ui.quickfixWidget);
+    fs::path absPath(directory_.toLocal8Bit().toStdString());
+    absPath.append(name.toLocal8Bit().data());
+    auto item = createFileItem(QString::fromLocal8Bit(absPath.string().c_str()),
+                               name, ui.quickfixWidget);
     ui.quickfixWidget->addItem(item);
   }
   ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
