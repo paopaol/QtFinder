@@ -34,6 +34,7 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
     while (rg_.canReadLine()) {
       QString line = rg_.readLine();
       line = line.trimmed();
+      line = QDir::fromNativeSeparators(line);
       ui.quickfixWidget->addItem(createFileItem(line, line, ui.quickfixWidget));
     }
     ui.quickfixWidget->scrollToBottom();
