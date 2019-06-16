@@ -19,10 +19,12 @@ private slots:
   void onSearchKeyWordsChanged(const QStringList &keyWords, QtFinder::Cmd cmd);
   void onKeyPressed(Qt::Key key);
   void onEnterKeyPressed();
+  void onCtrlEnterPressed();
   void fdSearch(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
   void listDirectory();
   void openDirectoryOfFile(const QString &path);
+  void openDirectoryOrFile(const QString &path);
 
 private:
   Ui::Widget ui;

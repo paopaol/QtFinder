@@ -90,6 +90,9 @@ void QtFinderWindow::onKeyPressed(Qt::Key key) {
     ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
     break;
   }
+  case Qt::Key_Enter | Qt::Key_Control: {
+    onCtrlEnterPressed();
+  }
   default:
     break;
   }
@@ -118,6 +121,25 @@ void QtFinderWindow::onEnterKeyPressed() {
   directory_ = fileInfo.absoluteFilePath();
 
   listDirectory();
+}
+
+void QtFinderWindow::onCtrlEnterPressed() {
+  if (ui.quickfixWidget->count() == 0) {
+    return;
+  }
+  auto item = ui.quickfixWidget->currentItem();
+  if (!item) {
+    return;
+  }
+  auto text = item->text();
+
+  /// the text maybe a relative path or a absolute path,
+  /// but we need convert relative path to absolute path
+  QFileInfo fileInfo(text);
+  if (!fileInfo.isAbsolute()) {
+    fileInfo = directory_ + "/" + text;
+  }
+  openDirectoryOrFile(fileInfo.absoluteFilePath());
 }
 
 void QtFinderWindow::fdSearch(const QStringList &keywords) {
@@ -174,6 +196,11 @@ void QtFinderWindow::openDirectoryOfFile(const QString &filePath) {
   QUrl url = QUrl::fromLocalFile(dir);
   QDesktopServices::openUrl(url);
 #endif
+}
+
+void QtFinderWindow::openDirectoryOrFile(const QString &path) {
+  QUrl url = QUrl::fromLocalFile(path);
+  QDesktopServices::openUrl(url);
 }
 
 static QString fdPattern(const QStringList &keywords) {

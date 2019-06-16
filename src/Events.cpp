@@ -2,9 +2,14 @@
 
 Qt::Key key_press_event(QKeyEvent *event) {
   switch (event->key()) {
-  case Qt::Key_Enter:
-  case Qt::Key_Return:
   case Qt::Key_Tab: {
+    return Qt::Key_Tab;
+  }
+  case Qt::Key_Enter:
+  case Qt::Key_Return: {
+    if (event->modifiers() == Qt::ControlModifier) {
+      return static_cast<Qt::Key>(Qt::Key_Control | Qt::Key_Enter);
+    }
     return Qt::Key_Enter;
   }
   case Qt::Key_Down: {
