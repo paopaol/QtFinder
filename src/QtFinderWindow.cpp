@@ -12,7 +12,6 @@
 namespace fs = std::experimental::filesystem::v1;
 
 static QString fdPattern(const QStringList &keywords);
-static QStringList rgPattern(const QStringList &keywords);
 static void killProcess(QProcess &process);
 static QStringList directoryEntryList(const QString &directory);
 static QListWidgetItem *createFileItem(const QString &path, const QString &text,
@@ -29,22 +28,22 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
           &QtFinderWindow::onKeyPressed);
   connect(ui.quickfixWidget, &QuickfixWidget::keyPressed, this,
           &QtFinderWindow::onKeyPressed);
-  connect(&rg_, &QProcess::readyRead, this, [&]() {
+  connect(&fd_, &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
-    while (rg_.canReadLine()) {
-      QString line = rg_.readLine();
+    while (fd_.canReadLine()) {
+      QString line = fd_.readLine();
       line = line.trimmed();
       line = QDir::fromNativeSeparators(line);
       ui.quickfixWidget->addItem(createFileItem(line, line, ui.quickfixWidget));
     }
     ui.quickfixWidget->scrollToBottom();
   });
-  connect(&rg_, &QProcess::readyReadStandardError, [&]() {
+  connect(&fd_, &QProcess::readyReadStandardError, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
-    QString line = textCodec->fromUnicode(rg_.readAllStandardError());
+    QString line = textCodec->fromUnicode(fd_.readAllStandardError());
     qDebug() << line;
   });
-  connect(&rg_, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this,
+  connect(&fd_, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this,
           [&](int exitCode) { ui.quickfixWidget->scrollToTop(); });
   ui.quickfixWidget->setUniformItemSizes(true);
 }
@@ -144,12 +143,6 @@ void QtFinderWindow::onCtrlEnterPressed() {
 void QtFinderWindow::fdSearch(const QStringList &keywords) {
   ui.quickfixWidget->clear();
   killProcess(fd_);
-  killProcess(rg_);
-
-  fd_.setStandardOutputProcess(&rg_);
-
-  rg_.start("rg", rgPattern(keywords));
-  rg_.waitForStarted();
 
   QStringList fdArgs;
   fdArgs << "-p" << fdPattern(keywords) << directory_;
@@ -218,15 +211,6 @@ static QString fdPattern(const QStringList &keywords) {
     st << key << ".*";
   }
   return pattern;
-}
-
-static QStringList rgPattern(const QStringList &keywords) {
-  QStringList patterns;
-  for (auto &key : keywords) {
-    patterns.push_back("-e");
-    patterns.push_back(key);
-  }
-  return patterns;
 }
 
 static void killProcess(QProcess &process) {

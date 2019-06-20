@@ -30,7 +30,6 @@ private slots:
 private:
   Ui::Widget ui;
   QProcess fd_;
-  QProcess rg_;
 
   QString directory_{"~"};
 };
