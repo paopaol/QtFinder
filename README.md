@@ -8,6 +8,8 @@ QtFinder is a **[fd](https://github.com/BurntSushi/ripgrep)** ui front end tool.
 
   Support fuzzy search, keyword separation by space
 
+  Support for regular expressions
+
 ## build
 
  * linux
