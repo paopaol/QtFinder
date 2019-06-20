@@ -104,9 +104,6 @@ void QtFinderWindow::onKeyPressed(Qt::Key key) {
 }
 
 void QtFinderWindow::onEnterKeyPressed() {
-  if (ui.quickfixWidget->count() == 0) {
-    return;
-  }
   auto item = ui.quickfixWidget->currentItem();
   if (!item) {
     return;
@@ -129,9 +126,6 @@ void QtFinderWindow::onEnterKeyPressed() {
 }
 
 void QtFinderWindow::onCtrlEnterPressed() {
-  if (ui.quickfixWidget->count() == 0) {
-    return;
-  }
   auto item = ui.quickfixWidget->currentItem();
   if (!item) {
     return;
@@ -248,7 +242,7 @@ static void killProcess(QProcess &process) {
 
 static QStringList directoryEntryList(const QString &directory) {
   QDir dir(directory);
-  QDir::Filters filters = QDir::Dirs | QDir::Files;
+  QDir::Filters filters = QDir::Dirs | QDir::Files | QDir::Hidden;
   filters |= dir.isRoot() ? QDir::NoDotAndDotDot : QDir::NoDot;
   return dir.entryList(filters);
 }
