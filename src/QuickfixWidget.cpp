@@ -17,9 +17,6 @@ void QuickfixWidget::clear() {
 void QuickfixWidget::updateCurrentRow(SelectOpt opt) {
   switch (opt) {
   case SelectOpt::kKeep: {
-    if (currentRow_ == -1) {
-      ++currentRow_;
-    }
     break;
   }
   case SelectOpt::kDown: {

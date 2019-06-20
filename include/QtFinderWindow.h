@@ -22,7 +22,8 @@ private slots:
   void onCtrlEnterPressed();
   void fdSearch(const QStringList &keyWords);
   void onDirectoryChanged(const QString &directory);
-  void listDirectory();
+  void showDirectory();
+  void showUpDirectory();
   void openDirectoryOfFile(const QString &path);
   void openDirectoryOrFile(const QString &path);
 

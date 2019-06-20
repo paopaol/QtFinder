@@ -24,7 +24,7 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   connect(ui.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged, this,
           &QtFinderWindow::onSearchKeyWordsChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
-          [&]() { listDirectory(); });
+          [&]() { showDirectory(); });
   connect(ui.searchLineEdit, &SearchLineEdit::keyPressed, this,
           &QtFinderWindow::onKeyPressed);
   connect(ui.quickfixWidget, &QuickfixWidget::keyPressed, this,
@@ -53,7 +53,7 @@ QtFinderWindow::~QtFinderWindow() noexcept {}
 
 void QtFinderWindow::show() {
   QWidget::show();
-  listDirectory();
+  showDirectory();
 }
 
 void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords,
@@ -93,6 +93,10 @@ void QtFinderWindow::onKeyPressed(Qt::Key key) {
   }
   case Qt::Key_Enter | Qt::Key_Control: {
     onCtrlEnterPressed();
+    break;
+  }
+  case Qt::Key_Control | Qt::Key_H: {
+    showUpDirectory();
   }
   default:
     break;
@@ -121,7 +125,7 @@ void QtFinderWindow::onEnterKeyPressed() {
   }
   directory_ = fileInfo.absoluteFilePath();
 
-  listDirectory();
+  showDirectory();
 }
 
 void QtFinderWindow::onCtrlEnterPressed() {
@@ -164,10 +168,10 @@ void QtFinderWindow::fdSearch(const QStringList &keywords) {
 void QtFinderWindow::onDirectoryChanged(const QString &directory) {
   QDir dir(directory);
   directory_ = directory;
-  listDirectory();
+  showDirectory();
 }
 
-void QtFinderWindow::listDirectory() {
+void QtFinderWindow::showDirectory() {
   directory_ = directory_ == "~" ? QDir::homePath() : directory_;
 
   ui.quickfixWidget->clear();
@@ -181,6 +185,15 @@ void QtFinderWindow::listDirectory() {
     ui.quickfixWidget->addItem(item);
   }
   ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
+}
+
+void QtFinderWindow::showUpDirectory() {
+  fs::path dir(directory_.toLocal8Bit().toStdString());
+  if (dir != dir.root_path()) {
+    dir = dir.parent_path();
+    directory_ = QString::fromLocal8Bit(dir.string().c_str());
+  }
+  showDirectory();
 }
 
 void QtFinderWindow::openDirectoryOfFile(const QString &filePath) {

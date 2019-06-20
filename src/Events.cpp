@@ -32,6 +32,21 @@ Qt::Key key_press_event(QKeyEvent *event) {
     }
     break;
   }
+  case Qt::Key_H: {
+    if (event->modifiers() == Qt::ControlModifier) {
+      return static_cast<Qt::Key>(Qt::Key_Control | Qt::Key_H);
+    }
+  }
+  case Qt::Key_Right: {
+    if (event->modifiers() == Qt::AltModifier) {
+      return Qt::Key_Enter;
+    }
+  }
+  case Qt::Key_Left: {
+    if (event->modifiers() == Qt::AltModifier) {
+      return static_cast<Qt::Key>(Qt::Key_Control | Qt::Key_H);
+    }
+  }
   default:
     break;
   }
