@@ -3,9 +3,9 @@
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
 
-  QtFinderWindow qtFinder;
+  QtFinderApp qtFinder;
 
-  qtFinder.show();
+  qtFinder.run();
 
   return app.exec();
 }
