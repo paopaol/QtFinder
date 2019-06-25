@@ -1,4 +1,8 @@
+
+
 # QtFinder
+[![Build status](https://ci.appveyor.com/api/projects/status/uhuntr4myi4ljaku?svg=true)](https://ci.appveyor.com/project/paopaol/qtfinder)
+
 a wrap of **ripgrep** tool using Qt ui
 
 QtFinder is a **[fd](https://github.com/BurntSushi/ripgrep)** ui front end tool.
