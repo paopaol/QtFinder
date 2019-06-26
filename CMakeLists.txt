@@ -30,7 +30,7 @@ set(src-files
   )
 
 if(CMAKE_COMPILER_IS_GNUCC)
-  set(inked_libries stdc++fs)
+  set(linked_libries stdc++fs)
 endif()
 
 if(WIN32)
