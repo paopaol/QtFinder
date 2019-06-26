@@ -1,0 +1,40 @@
+version: 1.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
+image:
+  - Visual Studio 2015
+  - Ubuntu1804
+platform:
+  - x86
+  - x64
+configuration:
+  - Debug
+  - Release
+
+install:
+  - sh: "yes| sudo apt-get install build-essential"
+  - sh: "yes | sudo apt-get install qt5-default"
+cache:
+  - build
+
+for:
+-
+  matrix:
+    only:
+      - platform: x64
+  build_script:
+    - sh: "cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=${CONFIGURATION}"
+    - sh: "cmake --build build --config ${CONFIGURATION}"
+    - cmd: "cmake -H. -Bbuild -G\"Visual Studio 14 2015 Win64\" -DCMAKE_PREFIX_PATH=C:/Qt/5.9.7/msvc2015_64"
+    - cmd: "cmake --build build --config %CONFIGURATION%"
+
+
+-
+  matrix:
+    only:
+      - platform: x86
+  build_script:
+    - sh: "cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=${CONFIGURATION}"
+    - sh: "cmake  --build build --config ${CONFIGURATION}"
+    - cmd: "cmake -H. -Bbuild -G\"Visual Studio 14 2015\" -DCMAKE_PREFIX_PATH=C:/Qt/5.9.7/msvc2015"
+    - cmd: "cmake --build build --config %CONFIGURATION%"
