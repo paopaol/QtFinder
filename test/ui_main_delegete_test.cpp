@@ -7,11 +7,9 @@
 class TestGuiMainWindowPrivate;
 class QtFinderWindowPrivateHook : public QtFinderWindowPrivate {
 public:
-  QtFinderWindowPrivateHook() : dummy(new QWidget), QtFinderWindowPrivate() {}
+  QtFinderWindowPrivateHook(QWidget *parent = nullptr)
+      : QtFinderWindowPrivate(parent) {}
   friend class TestGuiMainWindowPrivate;
-
-private:
-  QWidget *dummy{nullptr};
 };
 
 class TestGuiMainWindowPrivate : public QObject {
@@ -32,8 +30,6 @@ void TestGuiMainWindowPrivate::
   QtFinderWindowPrivateHook hook;
 
   Ui::Widget &ui = hook.ui;
-
-  ui.setupUi(hook.dummy);
 
   QSignalSpy spy(ui.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged);
 
@@ -61,20 +57,23 @@ void TestGuiMainWindowPrivate::
                                    << "keywords");
 }
 
-void TestGuiMainWindowPrivate::keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty() {
+void TestGuiMainWindowPrivate::
+    keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty() {
 
   QtFinderWindowPrivateHook hook;
 
   Ui::Widget &ui = hook.ui;
 
-  ui.setupUi(hook.dummy);
+  hook.show();
+
   ui.searchLineEdit->setKeywordsChangedMaxDelay(1000);
 
   QSignalSpy spy(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty);
 
-  QTest::keyClicks(ui.searchLineEdit, ":fd search keywords");
+  QTest::keyClicks(ui.searchLineEdit, ":fd search keywords", Qt::NoModifier,
+                   100);
   QTest::keyPress(ui.searchLineEdit, 'a', Qt::ControlModifier, 200);
-  QTest::keyPress(ui.searchLineEdit, Qt::Key_Delete);
+  QTest::keyPress(ui.searchLineEdit, Qt::Key_Delete, Qt::NoModifier, 3000);
   QCOMPARE(spy.count(), 1);
 }
 
@@ -83,7 +82,8 @@ void TestGuiMainWindowPrivate::typeShortcutKey_gotSignalShortcutKeyPressed() {
 
   Ui::Widget &ui = hook.ui;
 
-  ui.setupUi(hook.dummy);
+  hook.show();
+
   testSimulateShortcutKey(ui.searchLineEdit);
   testSimulateShortcutKey(ui.quickfixWidget);
 }

@@ -7,14 +7,13 @@
 
 #include <QProcess>
 
-class QtFinderWindowPrivate{
+class QtFinderWindowPrivate : public QWidget {
 public:
-  QtFinderWindowPrivate();
+  QtFinderWindowPrivate(QWidget *parent = nullptr);
   QtFinderWindowPrivate(const QtFinderWindowPrivate &other) = delete;
   QtFinderWindowPrivate &operator=(const QtFinderWindowPrivate &other) = delete;
   virtual ~QtFinderWindowPrivate() noexcept;
 
-  void show();
 protected:
   Ui::Widget ui;
   QString directory_{"~"};
