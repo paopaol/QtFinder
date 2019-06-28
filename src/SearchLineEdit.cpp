@@ -10,6 +10,8 @@ namespace fs = std::experimental::filesystem::v1;
 static bool isAbsDirOrHome(const QString &key);
 
 SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
+  qRegisterMetaType<QtFinder::Cmd>("QtFinder::Cmd");
+
   connect(this, &QLineEdit::textEdited, this, &SearchLineEdit::parseUserInput);
   connect(&delayTimer_, &QTimer::timeout, this,
           [&]() { emit searchKeyWordsChanged(keywords_, QtFinder::Cmd::kFd); });
@@ -24,6 +26,10 @@ SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
 }
 
 SearchLineEdit::~SearchLineEdit() noexcept {}
+
+void SearchLineEdit::setKeywordsChangedMaxDelay(int delayMs) {
+  searchDelay_ = delayMs;
+}
 
 void SearchLineEdit::parseUserInput(const QString &text) {
   /// canel search timer,and restart the timer

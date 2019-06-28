@@ -14,7 +14,7 @@ template <class T> inline QList<T> &cdrList(QList<T> &list) {
 }
 
 class SearchLineEdit : public QLineEdit {
-  Q_OBJECT
+	Q_OBJECT
 public:
   //! Default constructor
   SearchLineEdit(QWidget *parent = nullptr);
@@ -24,6 +24,8 @@ public:
   SearchLineEdit &operator=(const SearchLineEdit &other) = delete;
   //! Destructor
   virtual ~SearchLineEdit() noexcept;
+
+  void setKeywordsChangedMaxDelay(int delayMs);
 
 protected:
   void keyPressEvent(QKeyEvent *) override;
