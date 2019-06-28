@@ -24,9 +24,9 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
           &QtFinderWindow::onSearchKeyWordsChanged);
   connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
           [&]() { showDirectory(); });
-  connect(ui.searchLineEdit, &SearchLineEdit::keyPressed, this,
+  connect(ui.searchLineEdit, &SearchLineEdit::shortcutKeyPressed, this,
           &QtFinderWindow::onKeyPressed);
-  connect(ui.quickfixWidget, &QuickfixWidget::keyPressed, this,
+  connect(ui.quickfixWidget, &QuickfixWidget::shortcutKeyPressed, this,
           &QtFinderWindow::onKeyPressed);
   connect(&fd_, &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");

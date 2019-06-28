@@ -47,7 +47,7 @@ signals:
      ctrl+p/k will convert to up key
      enter/return/tab will convert to enter
    */
-  void keyPressed(Qt::Key key);
+  void shortcutKeyPressed(Qt::Key key);
 
 private:
   typedef std::function<void(const QStringList &keywords)> cmdEmiter;

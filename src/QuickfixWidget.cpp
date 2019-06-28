@@ -40,7 +40,7 @@ void QuickfixWidget::updateCurrentRow(SelectOpt opt) {
 void QuickfixWidget::keyPressEvent(QKeyEvent *event) {
   auto key = key_press_event(event);
   if (key != Qt::Key_unknown) {
-    emit keyPressed(key);
+    emit shortcutKeyPressed(key);
     return;
   }
   QListWidget::keyPressEvent(event);

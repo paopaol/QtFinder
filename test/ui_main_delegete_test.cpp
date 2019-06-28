@@ -1,6 +1,7 @@
 #include <QSignalSpy>
 #include <QTest>
 
+#include <Events.h>
 #include <private/QtFinderWindow_p.h>
 
 class TestGuiMainWindowPrivate;
@@ -17,12 +18,16 @@ class TestGuiMainWindowPrivate : public QObject {
   Q_OBJECT
 
 private slots:
-  void keywordsIsEmpty_inputKeywords_gotSinalAfterSomeDelay();
-  void keywordsNotEmpty_clearKeyWords_gotEmptySignal();
+  void keywordsIsEmpty_inputKeywords_gotSignalKeywordsChanged();
+  void keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty();
+  void typeShortcutKey_gotSignalShortcutKeyPressed();
+
+private:
+  template <class T> void testSimulateShortcutKey(T *widget);
 };
 
 void TestGuiMainWindowPrivate::
-    keywordsIsEmpty_inputKeywords_gotSinalAfterSomeDelay() {
+    keywordsIsEmpty_inputKeywords_gotSignalKeywordsChanged() {
 
   QtFinderWindowPrivateHook hook;
 
@@ -56,7 +61,7 @@ void TestGuiMainWindowPrivate::
                                    << "keywords");
 }
 
-void TestGuiMainWindowPrivate::keywordsNotEmpty_clearKeyWords_gotEmptySignal() {
+void TestGuiMainWindowPrivate::keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty() {
 
   QtFinderWindowPrivateHook hook;
 
@@ -69,8 +74,32 @@ void TestGuiMainWindowPrivate::keywordsNotEmpty_clearKeyWords_gotEmptySignal() {
 
   QTest::keyClicks(ui.searchLineEdit, ":fd search keywords");
   QTest::keyPress(ui.searchLineEdit, 'a', Qt::ControlModifier, 200);
-  QTest::keyPress(ui.searchLineEdit, Qt::Key_Delete );
+  QTest::keyPress(ui.searchLineEdit, Qt::Key_Delete);
   QCOMPARE(spy.count(), 1);
+}
+
+void TestGuiMainWindowPrivate::typeShortcutKey_gotSignalShortcutKeyPressed() {
+  QtFinderWindowPrivateHook hook;
+
+  Ui::Widget &ui = hook.ui;
+
+  ui.setupUi(hook.dummy);
+  testSimulateShortcutKey(ui.searchLineEdit);
+  testSimulateShortcutKey(ui.quickfixWidget);
+}
+
+template <class T>
+void TestGuiMainWindowPrivate::testSimulateShortcutKey(T *widget) {
+  QSignalSpy spy(widget, &T::shortcutKeyPressed);
+
+  for (auto &shortcutKey : shortcutKeyTable()) {
+    QTest::keyPress(widget, shortcutKey.Key, shortcutKey.Modifier, 10);
+    QCOMPARE(spy.count(), 1);
+
+    auto arguments = spy.takeFirst();
+
+    QCOMPARE(qvariant_cast<Qt::Key>(arguments.at(0)), shortcutKey.AliasKey);
+  }
 }
 
 QTEST_MAIN(TestGuiMainWindowPrivate)

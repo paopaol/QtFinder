@@ -11,6 +11,7 @@ static bool isAbsDirOrHome(const QString &key);
 
 SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
   qRegisterMetaType<QtFinder::Cmd>("QtFinder::Cmd");
+  qRegisterMetaType<Qt::Key>("Qt::Key");
 
   connect(this, &QLineEdit::textEdited, this, &SearchLineEdit::parseUserInput);
   connect(&delayTimer_, &QTimer::timeout, this,
@@ -85,7 +86,7 @@ void SearchLineEdit::quickfixCmdEmit(const QStringList &keywords) {
 void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
   auto key = key_press_event(event);
   if (key != Qt::Key_unknown) {
-    emit keyPressed(key);
+    emit shortcutKeyPressed(key);
     return;
   }
   QLineEdit::keyPressEvent(event);
