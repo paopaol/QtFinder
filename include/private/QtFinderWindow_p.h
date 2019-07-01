@@ -8,6 +8,7 @@
 #include <QProcess>
 
 class QtFinderWindowPrivate : public QWidget {
+  Q_OBJECT
 public:
   QtFinderWindowPrivate(QWidget *parent = nullptr);
   QtFinderWindowPrivate(const QtFinderWindowPrivate &other) = delete;

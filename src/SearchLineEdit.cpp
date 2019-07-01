@@ -28,7 +28,7 @@ SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
 
 SearchLineEdit::~SearchLineEdit() noexcept {}
 
-void SearchLineEdit::setKeywordsChangedMaxDelay(int delayMs) {
+void SearchLineEdit::setFdCmdTriggerDelay(int delayMs) {
   searchDelay_ = delayMs;
 }
 
@@ -55,6 +55,11 @@ void SearchLineEdit::emitQtFinderCmd(QStringList &keywords) {
     keywords.prepend(cmdString);
   } else {
     cmdString = key.toLower();
+  }
+  for (auto cmd = cmdTable_.begin(); cmd != cmdTable_.end(); cmd++) {
+    if (cmd.key().startsWith(key) && cmd.key() != key) {
+      return;
+    }
   }
   if (!cmdTable_.contains(cmdString)) {
     cmdString = ":quickfix";

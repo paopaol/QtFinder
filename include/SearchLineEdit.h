@@ -25,7 +25,7 @@ public:
   //! Destructor
   virtual ~SearchLineEdit() noexcept;
 
-  void setKeywordsChangedMaxDelay(int delayMs);
+  void setFdCmdTriggerDelay(int delayMs);
 
 protected:
   void keyPressEvent(QKeyEvent *) override;

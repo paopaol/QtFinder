@@ -1,9 +1,13 @@
+#include <QFileIconProvider>
 #include <QuickfixLabel.h>
 #include <QuickfixWidget.h>
 
 #include <Events.h>
 #include <QKeyEvent>
 #include <QVBoxLayout>
+
+static QListWidgetItem *createFileItem(const QString &path, const QString &text,
+                                       QListWidget *parent);
 
 QuickfixWidget::QuickfixWidget(QWidget *parent) : QListWidget(parent) {}
 
@@ -37,8 +41,25 @@ void QuickfixWidget::updateCurrentRow(SelectOpt opt) {
   }
 }
 
+void QuickfixWidget::addCandidate(const QString &candidate) {
+  addItem(candidate);
+  updateCurrentRow(SelectOpt::kKeep);
+}
+
 void QuickfixWidget::keyPressEvent(QKeyEvent *event) {
   auto key = key_press_event(event);
+  switch (key) {
+  case Qt::Key_Down: {
+    updateCurrentRow(SelectOpt::kDown);
+    break;
+  }
+  case Qt::Key_Up: {
+    updateCurrentRow(SelectOpt::kUp);
+    break;
+  }
+  default:
+    break;
+  }
   if (key != Qt::Key_unknown) {
     emit shortcutKeyPressed(key);
     return;

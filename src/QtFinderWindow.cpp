@@ -1,7 +1,6 @@
 #include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
-#include <QFileIconProvider>
 #include <QFileInfo>
 #include <QStringListModel>
 #include <QTextCodec>
@@ -231,9 +230,3 @@ static QStringList directoryEntryList(const QString &directory) {
   return dir.entryList(filters);
 }
 
-static QListWidgetItem *createFileItem(const QString &path, const QString &text,
-                                       QListWidget *parent) {
-  QIcon icon = QFileIconProvider().icon(QFileInfo(path));
-  QListWidgetItem *item = new QListWidgetItem(icon, text, parent);
-  return item;
-}

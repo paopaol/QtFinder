@@ -18,6 +18,7 @@ public:
 
   void clear();
   void updateCurrentRow(SelectOpt opt);
+  void addCandidate(const QString &candidate);
 
 signals:
   /**@brief emited when some key pressed
