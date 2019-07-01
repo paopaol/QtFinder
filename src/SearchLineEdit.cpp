@@ -13,7 +13,7 @@ SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
   qRegisterMetaType<QtFinder::Cmd>("QtFinder::Cmd");
   qRegisterMetaType<Qt::Key>("Qt::Key");
 
-  connect(this, &QLineEdit::textEdited, this, &SearchLineEdit::parseUserInput);
+  connect(this, &QLineEdit::textChanged, this, &SearchLineEdit::parseUserInput);
   connect(&delayTimer_, &QTimer::timeout, this,
           [&]() { emit searchKeyWordsChanged(keywords_, QtFinder::Cmd::kFd); });
   delayTimer_.setSingleShot(true);

@@ -2,15 +2,8 @@
 #include <QTest>
 
 #include <Events.h>
+#include <SearchLineEdit.h>
 #include <private/QtFinderWindow_p.h>
-
-class GuiMainWindowPrivateTest;
-class QtFinderWindowPrivateHook : public QtFinderWindowPrivate {
-public:
-  QtFinderWindowPrivateHook(QWidget *parent = nullptr)
-      : QtFinderWindowPrivate(parent) {}
-  friend class GuiMainWindowPrivateTest;
-};
 
 class GuiMainWindowPrivateTest : public QObject {
   Q_OBJECT
@@ -28,16 +21,15 @@ private:
 
 void GuiMainWindowPrivateTest::
     keywordsIsEmpty_inputKeywords_gotSignalKeywordsChanged() {
+  SearchLineEdit lineEdit;
 
-  QtFinderWindowPrivateHook hook;
+  lineEdit.show();
 
-  Ui::Widget &ui = hook.ui;
+  QSignalSpy spy(&lineEdit, &SearchLineEdit::searchKeyWordsChanged);
 
-  QSignalSpy spy(ui.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged);
+  lineEdit.setFdCmdTriggerDelay(1000);
 
-  ui.searchLineEdit->setFdCmdTriggerDelay(1000);
-
-  QTest::keyClicks(ui.searchLineEdit, ":fd search keywords");
+  QTest::keyClicks(&lineEdit, ":fd search keywords");
 
   spy.wait(2000);
 
@@ -56,36 +48,31 @@ void GuiMainWindowPrivateTest::
 void GuiMainWindowPrivateTest::
     keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty() {
 
-  QtFinderWindowPrivateHook hook;
+  SearchLineEdit lineEdit;
 
-  Ui::Widget &ui = hook.ui;
+  lineEdit.show();
 
-  hook.show();
+  lineEdit.setFdCmdTriggerDelay(1000);
 
-  ui.searchLineEdit->setFdCmdTriggerDelay(1000);
+  QSignalSpy spy(&lineEdit, &SearchLineEdit::keywordsEmpty);
 
-  QSignalSpy spy(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty);
-
-  QTest::keyClicks(ui.searchLineEdit, ":fd search keywords", Qt::NoModifier,
-                   100);
-  QTest::keyPress(ui.searchLineEdit, 'a', Qt::ControlModifier, 200);
-  QTest::keyPress(ui.searchLineEdit, Qt::Key_Delete, Qt::NoModifier, 3000);
+  QTest::keyClicks(&lineEdit, ":fd search keywords", Qt::NoModifier, 100);
+  QTest::keyPress(&lineEdit, 'a', Qt::ControlModifier, 200);
+  QTest::keyPress(&lineEdit, Qt::Key_Delete, Qt::NoModifier, 3000);
   QCOMPARE(spy.count(), 1);
 }
 
 void GuiMainWindowPrivateTest::typeShortcutKey_gotSignalShortcutKeyPressed() {
-  QtFinderWindowPrivateHook hook;
+  SearchLineEdit lineEdit;
+  QuickfixWidget quickfixWidget;
 
-  Ui::Widget &ui = hook.ui;
-
-  hook.show();
-
-  testSimulateShortcutKey(ui.searchLineEdit);
-  testSimulateShortcutKey(ui.quickfixWidget);
+  testSimulateShortcutKey(&lineEdit);
+  testSimulateShortcutKey(&quickfixWidget);
 }
 
 template <class T>
 void GuiMainWindowPrivateTest::testSimulateShortcutKey(T *widget) {
+  widget->show();
   QSignalSpy spy(widget, &T::shortcutKeyPressed);
 
   for (auto &shortcutKey : shortcutKeyTable()) {
@@ -100,36 +87,33 @@ void GuiMainWindowPrivateTest::testSimulateShortcutKey(T *widget) {
 
 void GuiMainWindowPrivateTest::
     candidatesIsEmpty_insert2Candidates_display2Candidates() {
-  QtFinderWindowPrivateHook hook;
-  Ui::Widget &ui = hook.ui;
+  QuickfixWidget quickfixWidget;
 
-  hook.show();
+  quickfixWidget.show();
 
-  QCOMPARE(ui.quickfixWidget->count(), 0);
-  ui.quickfixWidget->addCandidate("d:/123/111.txt");
-  ui.quickfixWidget->addCandidate("c:/123/111/txt");
+  QCOMPARE(quickfixWidget.count(), 0);
+  quickfixWidget.addCandidate("d:/123/111.txt");
+  quickfixWidget.addCandidate("c:/123/111/txt");
 
-  QCOMPARE(ui.quickfixWidget->count(), 2);
+  QCOMPARE(quickfixWidget.count(), 2);
 }
 
 void GuiMainWindowPrivateTest::quickfixCurrentRowStayHere_moveDownUp_Works() {
-  QtFinderWindowPrivateHook hook;
-  Ui::Widget &ui = hook.ui;
+  QuickfixWidget quickfixWidget;
+  quickfixWidget.show();
+  quickfixWidget.addCandidate("d:/123/111.txt");
+  quickfixWidget.addCandidate("c:/123/111/txt");
 
-  hook.show();
-  ui.quickfixWidget->addCandidate("d:/123/111.txt");
-  ui.quickfixWidget->addCandidate("c:/123/111/txt");
+  QCOMPARE(quickfixWidget.currentRow(), 0);
 
-  QCOMPARE(ui.quickfixWidget->currentRow(), 0);
+  QTest::keyPress(&quickfixWidget, Qt::Key_Up, Qt::NoModifier, 500);
+  QCOMPARE(quickfixWidget.currentRow(), 0);
 
-  QTest::keyPress(ui.quickfixWidget, Qt::Key_Up, Qt::NoModifier, 500);
-  QCOMPARE(ui.quickfixWidget->currentRow(), 0);
+  QTest::keyPress(&quickfixWidget, Qt::Key_Down, Qt::NoModifier, 500);
+  QCOMPARE(quickfixWidget.currentRow(), 1);
 
-  QTest::keyPress(ui.quickfixWidget, Qt::Key_Down, Qt::NoModifier, 500);
-  QCOMPARE(ui.quickfixWidget->currentRow(), 1);
-
-  QTest::keyPress(ui.quickfixWidget, Qt::Key_Down, Qt::NoModifier, 500);
-  QCOMPARE(ui.quickfixWidget->currentRow(), 1);
+  QTest::keyPress(&quickfixWidget, Qt::Key_Down, Qt::NoModifier, 500);
+  QCOMPARE(quickfixWidget.currentRow(), 1);
 }
 
 QTEST_MAIN(GuiMainWindowPrivateTest)

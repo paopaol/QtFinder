@@ -17,6 +17,8 @@ public:
 protected:
   Ui::Widget ui;
   QString directory_{"~"};
+
+  friend class QtFinderWindow;
 };
 
 #endif /* QTFINDERWINDOW_H */
