@@ -10,6 +10,7 @@ class GuiMainWindowPrivateTest : public QObject {
 
 private slots:
   void keywordsIsEmpty_inputKeywords_gotSignalKeywordsChanged();
+  void keywordsIsEmpty_setKeywords_gotSignalKeywordsChanged();
   void keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty();
   void typeShortcutKey_gotSignalShortcutKeyPressed();
   void candidatesIsEmpty_insert2Candidates_display2Candidates();
@@ -43,6 +44,31 @@ void GuiMainWindowPrivateTest::
   QCOMPARE(cmd, QtFinder::Cmd::kFd);
   QCOMPARE(keywords, QStringList() << "search"
                                    << "keywords");
+}
+
+void GuiMainWindowPrivateTest::
+    keywordsIsEmpty_setKeywords_gotSignalKeywordsChanged() {
+  SearchLineEdit lineEdit;
+
+  lineEdit.show();
+
+  QSignalSpy spy(&lineEdit, &SearchLineEdit::searchKeyWordsChanged);
+
+  lineEdit.setFdCmdTriggerDelay(1000);
+
+  lineEdit.setText("keywords");
+
+  spy.wait(2000);
+
+  QCOMPARE(spy.count(), 1);
+
+  QList<QVariant> arguments = spy.takeFirst();
+  QCOMPARE(arguments.size(), 2);
+
+  auto keywords = arguments.at(0).toStringList();
+  auto cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(1));
+  QCOMPARE(cmd, QtFinder::Cmd::kQuickfix);
+  QCOMPARE(keywords, QStringList() << "keywords");
 }
 
 void GuiMainWindowPrivateTest::
