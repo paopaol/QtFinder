@@ -9,15 +9,12 @@ class QuickfixLabel;
 class QuickfixWidget : public QListWidget {
   Q_OBJECT
 public:
-  enum class SelectOpt { kUp, kDown, kKeep };
-
   QuickfixWidget(QWidget *parent = nullptr);
   QuickfixWidget(const QuickfixWidget &other) = delete;
   QuickfixWidget &operator=(const QuickfixWidget &other) = delete;
   virtual ~QuickfixWidget() noexcept;
 
   void clear();
-  void updateCurrentRow(SelectOpt opt);
   void addCandidate(const QString &candidate);
 
 signals:
@@ -33,6 +30,10 @@ protected:
   bool focusNextPrevChild(bool next);
 
 private:
+  enum class SelectOpt { kUp, kDown, kKeep };
+
+  void updateCurrentRow(SelectOpt opt);
+
   int currentRow_{-1};
 };
 
