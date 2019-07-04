@@ -7,8 +7,8 @@
 
 namespace fs = std::experimental::filesystem::v1;
 
+namespace QtFinder {
 static bool isAbsDirOrHome(const QString &key);
-
 SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
   qRegisterMetaType<QtFinder::Cmd>("QtFinder::Cmd");
   qRegisterMetaType<Qt::Key>("Qt::Key");
@@ -20,9 +20,11 @@ SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
 
   using namespace std::placeholders;
   QMap<QString, cmdEmiter> cmdTable = {
-      {":fd", std::bind(&SearchLineEdit::fdCmdEmit, this, _1)},
-      {":quickfix", std::bind(&SearchLineEdit::quickfixCmdEmit, this, _1)},
-      {":directory", std::bind(&SearchLineEdit::directoryCmdEmit, this, _1)}};
+      {toQString(Cmd::kFd), std::bind(&SearchLineEdit::fdCmdEmit, this, _1)},
+      {toQString(Cmd::kQuickfix),
+       std::bind(&SearchLineEdit::quickfixCmdEmit, this, _1)},
+      {toQString(Cmd::kDirectoryChanged),
+       std::bind(&SearchLineEdit::directoryCmdEmit, this, _1)}};
   cmdTable_ = cmdTable;
 }
 
@@ -107,3 +109,4 @@ static bool isAbsDirOrHome(const QString &key) {
   }
   return false;
 }
+} // namespace QtFinder

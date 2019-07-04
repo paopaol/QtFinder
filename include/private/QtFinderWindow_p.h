@@ -7,12 +7,26 @@
 
 #include <QProcess>
 
-class QtFinderWindowPrivate : public QWidget {
+class QtFinderWindowPrivate final : public QWidget {
+  Q_OBJECT
 public:
   QtFinderWindowPrivate(QWidget *parent = nullptr);
   QtFinderWindowPrivate(const QtFinderWindowPrivate &other) = delete;
   QtFinderWindowPrivate &operator=(const QtFinderWindowPrivate &other) = delete;
+
+  void setSearchKeywords(const QtFinder::Cmd cmd, const QString &keywords);
+  void clearSearchKeywords();
+  QString currentDirectory() const;
+  void openCandidatePath(int index);
+  void openCandidateDirectory(int index);
+
   virtual ~QtFinderWindowPrivate() noexcept;
+
+signals:
+  void searchKeywordsChanged(const QStringList &keywords, QtFinder::Cmd cmd);
+  void keywordsEmpty();
+  void openPathChanged(const QString &path);
+  void openDirectoryChanged(const QString &directory);
 
 protected:
   Ui::Widget ui;

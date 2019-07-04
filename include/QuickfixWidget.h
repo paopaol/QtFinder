@@ -4,6 +4,8 @@
 #include <QListWidget>
 
 class QuickfixLabel;
+
+namespace QtFinder {
 /**@brief quickfix is like vim quickfix
  */
 class QuickfixWidget : public QListWidget {
@@ -36,5 +38,6 @@ private:
 
   int currentRow_{-1};
 };
+} // namespace QtFinder
 
 #endif /* QUICKFIX_H */

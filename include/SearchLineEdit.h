@@ -12,9 +12,9 @@ template <class T> inline QList<T> &cdrList(QList<T> &list) {
   }
   return list;
 }
-
+namespace QtFinder {
 class SearchLineEdit : public QLineEdit {
-	Q_OBJECT
+  Q_OBJECT
 public:
   //! Default constructor
   SearchLineEdit(QWidget *parent = nullptr);
@@ -68,5 +68,6 @@ private:
   QTimer delayTimer_;
   QMap<QString, cmdEmiter> cmdTable_;
 };
+} // namespace QtFinder
 
 #endif /* INPUT_BOX_H */

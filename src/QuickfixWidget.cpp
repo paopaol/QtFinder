@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <QVBoxLayout>
 
+namespace QtFinder {
 static QListWidgetItem *createFileItem(const QString &path, const QString &text,
                                        QListWidget *parent);
 
@@ -68,3 +69,4 @@ void QuickfixWidget::keyPressEvent(QKeyEvent *event) {
 }
 
 bool QuickfixWidget::focusNextPrevChild(bool next) { return false; }
+} // namespace QtFinder

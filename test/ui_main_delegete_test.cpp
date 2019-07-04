@@ -22,11 +22,11 @@ private:
 
 void GuiMainWindowPrivateTest::
     keywordsIsEmpty_inputKeywords_gotSignalKeywordsChanged() {
-  SearchLineEdit lineEdit;
+  QtFinder::SearchLineEdit lineEdit;
 
   lineEdit.show();
 
-  QSignalSpy spy(&lineEdit, &SearchLineEdit::searchKeyWordsChanged);
+  QSignalSpy spy(&lineEdit, &QtFinder::SearchLineEdit::searchKeyWordsChanged);
 
   lineEdit.setFdCmdTriggerDelay(1000);
 
@@ -40,7 +40,7 @@ void GuiMainWindowPrivateTest::
   QCOMPARE(arguments.size(), 2);
 
   auto keywords = arguments.at(0).toStringList();
-  auto cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(1));
+  QtFinder::Cmd cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(1));
   QCOMPARE(cmd, QtFinder::Cmd::kFd);
   QCOMPARE(keywords, QStringList() << "search"
                                    << "keywords");
@@ -48,11 +48,11 @@ void GuiMainWindowPrivateTest::
 
 void GuiMainWindowPrivateTest::
     keywordsIsEmpty_setKeywords_gotSignalKeywordsChanged() {
-  SearchLineEdit lineEdit;
+  QtFinder::SearchLineEdit lineEdit;
 
   lineEdit.show();
 
-  QSignalSpy spy(&lineEdit, &SearchLineEdit::searchKeyWordsChanged);
+  QSignalSpy spy(&lineEdit, &QtFinder::SearchLineEdit::searchKeyWordsChanged);
 
   lineEdit.setFdCmdTriggerDelay(1000);
 
@@ -74,13 +74,13 @@ void GuiMainWindowPrivateTest::
 void GuiMainWindowPrivateTest::
     keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty() {
 
-  SearchLineEdit lineEdit;
+  QtFinder::SearchLineEdit lineEdit;
 
   lineEdit.show();
 
   lineEdit.setFdCmdTriggerDelay(1000);
 
-  QSignalSpy spy(&lineEdit, &SearchLineEdit::keywordsEmpty);
+  QSignalSpy spy(&lineEdit, &QtFinder::SearchLineEdit::keywordsEmpty);
 
   QTest::keyClicks(&lineEdit, ":fd search keywords", Qt::NoModifier, 100);
   QTest::keyPress(&lineEdit, 'a', Qt::ControlModifier, 200);
@@ -89,8 +89,8 @@ void GuiMainWindowPrivateTest::
 }
 
 void GuiMainWindowPrivateTest::typeShortcutKey_gotSignalShortcutKeyPressed() {
-  SearchLineEdit lineEdit;
-  QuickfixWidget quickfixWidget;
+  QtFinder::SearchLineEdit lineEdit;
+  QtFinder::QuickfixWidget quickfixWidget;
 
   testSimulateShortcutKey(&lineEdit);
   testSimulateShortcutKey(&quickfixWidget);
@@ -113,7 +113,7 @@ void GuiMainWindowPrivateTest::testSimulateShortcutKey(T *widget) {
 
 void GuiMainWindowPrivateTest::
     candidatesIsEmpty_insert2Candidates_display2Candidates() {
-  QuickfixWidget quickfixWidget;
+  QtFinder::QuickfixWidget quickfixWidget;
 
   quickfixWidget.show();
 
@@ -125,8 +125,9 @@ void GuiMainWindowPrivateTest::
 }
 
 void GuiMainWindowPrivateTest::quickfixCurrentRowStayHere_moveDownUp_Works() {
-  QuickfixWidget quickfixWidget;
+  QtFinder::QuickfixWidget quickfixWidget;
   quickfixWidget.show();
+  QCOMPARE(quickfixWidget.currentRow(), -1);
   quickfixWidget.addCandidate("d:/123/111.txt");
   quickfixWidget.addCandidate("c:/123/111/txt");
 

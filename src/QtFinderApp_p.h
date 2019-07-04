@@ -7,10 +7,8 @@ class QtFinderAppPrivate : public QObject {
   Q_OBJECT
 public:
   QtFinderAppPrivate(QObject *parent = nullptr);
-
   virtual ~QtFinderAppPrivate() noexcept;
 
-signals:
 
 private:
   Q_DISABLE_COPY(QtFinderAppPrivate)
