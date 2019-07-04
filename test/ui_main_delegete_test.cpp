@@ -26,7 +26,7 @@ void GuiMainWindowPrivateTest::
 
   lineEdit.show();
 
-  QSignalSpy spy(&lineEdit, &QtFinder::SearchLineEdit::searchKeyWordsChanged);
+  QSignalSpy spy(&lineEdit, &QtFinder::SearchLineEdit::searchKeywordsChanged);
 
   lineEdit.setFdCmdTriggerDelay(1000);
 
@@ -52,7 +52,7 @@ void GuiMainWindowPrivateTest::
 
   lineEdit.show();
 
-  QSignalSpy spy(&lineEdit, &QtFinder::SearchLineEdit::searchKeyWordsChanged);
+  QSignalSpy spy(&lineEdit, &QtFinder::SearchLineEdit::searchKeywordsChanged);
 
   lineEdit.setFdCmdTriggerDelay(1000);
 

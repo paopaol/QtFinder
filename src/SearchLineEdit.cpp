@@ -15,7 +15,7 @@ SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
 
   connect(this, &QLineEdit::textChanged, this, &SearchLineEdit::parseUserInput);
   connect(&delayTimer_, &QTimer::timeout, this,
-          [&]() { emit searchKeyWordsChanged(keywords_, QtFinder::Cmd::kFd); });
+          [&]() { emit searchKeywordsChanged(keywords_, QtFinder::Cmd::kFd); });
   delayTimer_.setSingleShot(true);
 
   using namespace std::placeholders;
@@ -83,11 +83,11 @@ void SearchLineEdit::fdCmdEmit(const QStringList &keywords) {
 
 void SearchLineEdit::directoryCmdEmit(const QStringList &keywords) {
   clear();
-  emit searchKeyWordsChanged(keywords, QtFinder::Cmd::kDirectoryChanged);
+  emit searchKeywordsChanged(keywords, QtFinder::Cmd::kDirectoryChanged);
 }
 
 void SearchLineEdit::quickfixCmdEmit(const QStringList &keywords) {
-  emit searchKeyWordsChanged(keywords, QtFinder::Cmd::kQuickfix);
+  emit searchKeywordsChanged(keywords, QtFinder::Cmd::kQuickfix);
 }
 
 void SearchLineEdit::keyPressEvent(QKeyEvent *event) {

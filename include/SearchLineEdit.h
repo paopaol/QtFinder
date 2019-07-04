@@ -37,7 +37,7 @@ signals:
    * @details the input key word length must >= 3 chars
    * @return void
    */
-  void searchKeyWordsChanged(const QStringList &keywords, QtFinder::Cmd cmd);
+  void searchKeywordsChanged(const QStringList &keywords, QtFinder::Cmd cmd);
   /**@brief search line edit buffer is empty
    */
   void keywordsEmpty();
@@ -55,7 +55,7 @@ private:
   void emitQtFinderCmd(QStringList &keywords);
 
   /**@brief if keywords is validate successed, then,it will
-     emit searchKeyWordsChanged signal with a @see QtFinder::Cmd
+     emit searchKeywordsChanged signal with a @see QtFinder::Cmd
    */
   void fdCmdEmit(const QStringList &keywords);
   void directoryCmdEmit(const QStringList &keywords);

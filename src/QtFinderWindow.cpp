@@ -18,7 +18,7 @@ static QStringList directoryEntryList(const QString &directory);
 QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   // ui.setupUi(this);
 
-  // connect(ui.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged, this,
+  // connect(ui.searchLineEdit, &SearchLineEdit::searchKeywordsChanged, this,
   //         &QtFinderWindow::onSearchKeyWordsChanged);
   // connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
   //         [&]() { showDirectory(); });

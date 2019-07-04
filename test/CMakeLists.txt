@@ -31,7 +31,7 @@ add_test(gui_unit_test gui_unit_test)
 # add_test(gui_main_window_test gui_main_window_test)
 
 
-# add_executable(QtFinderWindowPrivateTest ${will_test_files} QtFinderWindowPrivateTest.cpp)
-# target_include_directories(QtFinderWindowPrivateTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-# target_link_libraries(QtFinderWindowPrivateTest Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Test)
-# add_test(QtFinderWindowPrivateTest QtFinderWindowPrivateTest)
+add_executable(QtFinderWindowPrivateTest ${will_test_files} QtFinderWindowPrivateTest.cpp)
+target_include_directories(QtFinderWindowPrivateTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(QtFinderWindowPrivateTest Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Test)
+add_test(QtFinderWindowPrivateTest QtFinderWindowPrivateTest)

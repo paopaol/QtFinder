@@ -42,7 +42,7 @@
    <extends>QLineEdit</extends>
    <header location="global">SearchLineEdit.h</header>
    <slots>
-    <signal>searchKeyWordsChanged(QStringList)</signal>
+    <signal>searchKeywordsChanged(QStringList)</signal>
    </slots>
   </customwidget>
   <customwidget>
