@@ -17,6 +17,10 @@ void QtFinderWindowPrivate::setSearchKeywords(const QtFinder::Cmd cmd,
   ui.searchLineEdit->setText(keywordsWithCmd);
 }
 
+void QtFinderWindowPrivate::setFdCmdTriggerDelay(int delayMs) {
+  ui.searchLineEdit->setFdCmdTriggerDelay(delayMs);
+}
+
 QString QtFinderWindowPrivate::currentDirectory() const { return directory_; }
 
 static QString fromQtFinderCmd(QtFinder::Cmd cmd) { return ""; }

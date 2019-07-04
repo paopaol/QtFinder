@@ -15,6 +15,7 @@ public:
   QtFinderWindowPrivate &operator=(const QtFinderWindowPrivate &other) = delete;
 
   void setSearchKeywords(const QtFinder::Cmd cmd, const QString &keywords);
+  void setFdCmdTriggerDelay(int delayMs);
   void clearSearchKeywords();
   QString currentDirectory() const;
   void openCandidatePath(int index);
