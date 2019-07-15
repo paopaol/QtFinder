@@ -18,8 +18,8 @@ public:
   void setFdCmdTriggerDelay(int delayMs);
   void clearSearchKeywords();
   QString currentDirectory() const;
-  void openCandidatePath(int index);
-  void openCandidateDirectory(int index);
+  void openCandidateAsPath(int index);
+  void openCandidateAsDirectory(int index);
 
   virtual ~QtFinderWindowPrivate() noexcept;
 
@@ -28,6 +28,7 @@ signals:
   void keywordsEmpty();
   void openPathChanged(const QString &path);
   void openDirectoryChanged(const QString &directory);
+  void candidateEmpty();
 
 protected:
   Ui::Widget ui;

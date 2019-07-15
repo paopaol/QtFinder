@@ -45,7 +45,7 @@ include_directories("./include")
 # add_executable(qt_finder ${GUI_TYPE} ${src-files})
 # target_include_directories(qt_finder PRIVATE "./include" ${CMAKE_BINARY_DIR})
 # target_link_libraries(qt_finder Qt5::Core Qt5::Widgets Qt5::Gui ${linked_libries})
-
+enable_testing()
 add_subdirectory(test)
 
 
