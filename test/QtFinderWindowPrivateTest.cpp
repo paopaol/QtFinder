@@ -12,6 +12,7 @@ private slots:
   void candidateIsEmpty_selectCandidate_gotSignalCandidateEmpty();
   void candidateisEmpty_addTwoCandidates_sizeIsTwo();
   void hasSomeCandidates_selectCandidate_gotSelectAsPathSignal();
+  void hasSomeCandidates_moveDownUp_Works();
 };
 
 void QtFinderWindowPrivateTest::defaultDirectoryIsHome() {
@@ -87,6 +88,33 @@ void QtFinderWindowPrivateTest::
   // win.selectCandidateAsPath(1);
   QTest::keyPress(&win, Qt::Key_Enter, Qt::ControlModifier);
   spy.wait(3000);
+
+  QCOMPARE(spy.count(), 1);
+}
+
+void QtFinderWindowPrivateTest::hasSomeCandidates_moveDownUp_Works() {
+  QtFinderWindowPrivate win;
+
+  win.show();
+
+  QSignalSpy spy(&win, &QtFinderWindowPrivate::selectedPathChanged);
+
+  QTemporaryFile f1("f1");
+  QTemporaryFile f2("f2");
+
+  f1.open();
+  f2.open();
+
+  win.addCandidate(f1.fileName());
+  win.addCandidate(f2.fileName());
+
+  // win.selectCandidateAsPath(1);
+  QTest::keyPress(&win, Qt::Key_Down, Qt::NoModifier, 1000);
+  QTest::keyPress(&win, Qt::Key_Down, Qt::NoModifier, 1000);
+  QTest::keyPress(&win, Qt::Key_Up, Qt::NoModifier, 1000);
+  QTest::keyPress(&win, Qt::Key_Up, Qt::NoModifier, 1000);
+  QTest::keyPress(&win, Qt::Key_Enter, Qt::ControlModifier, 1000);
+  spy.wait(7000);
 
   QCOMPARE(spy.count(), 1);
 }

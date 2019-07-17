@@ -28,7 +28,6 @@ public:
   void setFdCmdTriggerDelay(int delayMs);
 
 protected:
-  void keyPressEvent(QKeyEvent *) override;
   bool focusNextPrevChild(bool next) override;
 
 signals:

@@ -18,8 +18,8 @@ public:
 
   void clear();
   void addCandidate(const QString &candidate);
-  void moveNextCandidate();
-  void movePreviousCandidate();
+  void focusNextCandidate();
+  void focusPreviousCandidate();
 
 signals:
   /**@brief emited when some key pressed
@@ -30,7 +30,6 @@ signals:
   void shortcutKeyPressed(Qt::Key key);
 
 protected:
-  void keyPressEvent(QKeyEvent *) override;
   bool focusNextPrevChild(bool next);
 
 private:

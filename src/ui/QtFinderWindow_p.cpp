@@ -87,11 +87,11 @@ void QtFinderWindowPrivate::shortcutKeyHandler(Qt::Key key) {
     break;
   }
   case Qt::Key_Down: {
-    ui.quickfixWidget->moveNextCandidate();
+    ui.quickfixWidget->focusNextCandidate();
     break;
   }
   case Qt::Key_Up: {
-    ui.quickfixWidget->movePreviousCandidate();
+    ui.quickfixWidget->focusPreviousCandidate();
     break;
   }
   }

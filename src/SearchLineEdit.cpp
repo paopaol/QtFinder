@@ -1,4 +1,3 @@
-#include <Events.h>
 #include <QDir>
 #include <QKeyEvent>
 #include <QRegExp>
@@ -88,15 +87,6 @@ void SearchLineEdit::directoryCmdEmit(const QStringList &keywords) {
 
 void SearchLineEdit::quickfixCmdEmit(const QStringList &keywords) {
   emit searchKeywordsChanged(keywords, QtFinder::Cmd::kQuickfix);
-}
-
-void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
-  auto key = key_press_event(event);
-  if (key != Qt::Key_unknown) {
-    emit shortcutKeyPressed(key);
-    return;
-  }
-  QLineEdit::keyPressEvent(event);
 }
 
 bool SearchLineEdit::focusNextPrevChild(bool next) { return false; }

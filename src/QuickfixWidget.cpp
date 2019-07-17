@@ -2,7 +2,6 @@
 #include <QuickfixLabel.h>
 #include <QuickfixWidget.h>
 
-#include <Events.h>
 #include <QKeyEvent>
 #include <QVBoxLayout>
 
@@ -45,24 +44,16 @@ void QuickfixWidget::updateCurrentRow(SelectOpt opt) {
 void QuickfixWidget::addCandidate(const QString &candidate) {
   addItem(candidate);
   updateCurrentRow(SelectOpt::kKeep);
-}
+ }
 
-void QtFinder::QuickfixWidget::moveNextCandidate() {
+void QuickfixWidget::focusNextCandidate() {
   updateCurrentRow(SelectOpt::kDown);
 }
 
-void QtFinder::QuickfixWidget::movePreviousCandidate() {
+void QuickfixWidget::focusPreviousCandidate() {
   updateCurrentRow(SelectOpt::kUp);
 }
 
-void QuickfixWidget::keyPressEvent(QKeyEvent *event) {
-  auto key = key_press_event(event);
-  if (key != Qt::Key_unknown) {
-    emit shortcutKeyPressed(key);
-    return;
-  }
-  QListWidget::keyPressEvent(event);
-}
 
 bool QuickfixWidget::focusNextPrevChild(bool next) { return false; }
 } // namespace QtFinder
