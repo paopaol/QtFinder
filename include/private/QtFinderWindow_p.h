@@ -18,19 +18,28 @@ public:
   void setFdCmdTriggerDelay(int delayMs);
   void clearSearchKeywords();
   QString currentDirectory() const;
-  void openCandidateAsPath(int index);
-  void openCandidateAsDirectory(int index);
+  void selectCandidateAsPath(int row);
+  void selectCandidateAsDirectory(int row);
+  void addCandidate(const QString &candidate);
+  int candidateSize();
 
   virtual ~QtFinderWindowPrivate() noexcept;
+
+protected:
+  void keyPressEvent(QKeyEvent *) override;
 
 signals:
   void searchKeywordsChanged(const QStringList &keywords, QtFinder::Cmd cmd);
   void keywordsEmpty();
-  void openPathChanged(const QString &path);
-  void openDirectoryChanged(const QString &directory);
+  void selectedPathChanged(const QString &path);
+  void selectedDirectoryChanged(const QString &directory);
   void candidateEmpty();
+  void shortcutKeyPressed(Qt::Key key);
 
-protected:
+private:
+  QString selectCandidate(int row);
+  void shortcutKeyHandler(Qt::Key key);
+
   Ui::Widget ui;
   QString directory_{"~"};
 

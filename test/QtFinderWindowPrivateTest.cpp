@@ -1,4 +1,5 @@
 #include <QSignalSpy>
+#include <QTemporaryFile>
 #include <QTest>
 #include <private/QtFinderWindow_p.h>
 
@@ -8,7 +9,9 @@ private slots:
   void defaultDirectoryIsHome();
   void keywordsIsEmpty_setFdKeywords_gotSignalFdKeywordsChanged();
   void keywordsNotEmpty_clearKeywords_gotSignalKeywordsEmpty();
-  void candidateIsEmpty_openCandidate_gotSignalCandidateEmpty();
+  void candidateIsEmpty_selectCandidate_gotSignalCandidateEmpty();
+  void candidateisEmpty_addTwoCandidates_sizeIsTwo();
+  void hasSomeCandidates_selectCandidate_gotSelectAsPathSignal();
 };
 
 void QtFinderWindowPrivateTest::defaultDirectoryIsHome() {
@@ -19,6 +22,7 @@ void QtFinderWindowPrivateTest::defaultDirectoryIsHome() {
 void QtFinderWindowPrivateTest::
     keywordsIsEmpty_setFdKeywords_gotSignalFdKeywordsChanged() {
   QtFinderWindowPrivate win;
+  win.show();
 
   QSignalSpy spy(&win, &QtFinderWindowPrivate::searchKeywordsChanged);
 
@@ -47,11 +51,43 @@ void QtFinderWindowPrivateTest::
 }
 
 void QtFinderWindowPrivateTest::
-    candidateIsEmpty_openCandidate_gotSignalCandidateEmpty() {
+    candidateIsEmpty_selectCandidate_gotSignalCandidateEmpty() {
   QtFinderWindowPrivate win;
   QSignalSpy spy(&win, &QtFinderWindowPrivate::candidateEmpty);
 
-  win.openCandidateAsPath(0);
+  win.selectCandidateAsPath(0);
+  QCOMPARE(spy.count(), 1);
+}
+
+void QtFinderWindowPrivateTest::candidateisEmpty_addTwoCandidates_sizeIsTwo() {
+  QtFinderWindowPrivate win;
+
+  win.addCandidate("candidate_1");
+  win.addCandidate("candidate_2");
+  QCOMPARE(win.candidateSize(), 2);
+}
+
+void QtFinderWindowPrivateTest::
+    hasSomeCandidates_selectCandidate_gotSelectAsPathSignal() {
+  QtFinderWindowPrivate win;
+
+  win.show();
+
+  QSignalSpy spy(&win, &QtFinderWindowPrivate::selectedPathChanged);
+
+  QTemporaryFile f1("f1");
+  QTemporaryFile f2("f2");
+
+  f1.open();
+  f2.open();
+
+  win.addCandidate(f1.fileName());
+  win.addCandidate(f2.fileName());
+
+  // win.selectCandidateAsPath(1);
+  QTest::keyPress(&win, Qt::Key_Enter, Qt::ControlModifier);
+  spy.wait(3000);
+
   QCOMPARE(spy.count(), 1);
 }
 

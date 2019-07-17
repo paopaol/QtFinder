@@ -18,6 +18,8 @@ public:
 
   void clear();
   void addCandidate(const QString &candidate);
+  void moveNextCandidate();
+  void movePreviousCandidate();
 
 signals:
   /**@brief emited when some key pressed

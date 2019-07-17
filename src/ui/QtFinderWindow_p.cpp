@@ -1,3 +1,4 @@
+#include <Events.h>
 #include <QDesktopServices>
 #include <QFileInfo>
 #include <QUrl>
@@ -12,9 +13,24 @@ QtFinderWindowPrivate::QtFinderWindowPrivate(QWidget *parent)
           this, &QtFinderWindowPrivate::searchKeywordsChanged);
   connect(ui.searchLineEdit, &QtFinder::SearchLineEdit::keywordsEmpty, this,
           &QtFinderWindowPrivate::keywordsEmpty);
+  // connect(ui.searchLineEdit, &QtFinder::SearchLineEdit::shortcutKeyPressed,
+  //         this, &QtFinderWindowPrivate::shortcutKeyHandler);
+  // connect(ui.quickfixWidget, &QtFinder::QuickfixWidget::shortcutKeyPressed,
+  //         this, &QtFinderWindowPrivate::shortcutKeyHandler);
+  connect(this, &QtFinderWindowPrivate::shortcutKeyPressed, this,
+          &QtFinderWindowPrivate::shortcutKeyHandler);
 }
 
 QtFinderWindowPrivate::~QtFinderWindowPrivate() noexcept {}
+
+void QtFinderWindowPrivate::keyPressEvent(QKeyEvent *event) {
+  auto key = key_press_event(event);
+  if (key != Qt::Key_unknown) {
+    emit shortcutKeyPressed(key);
+    return;
+  }
+  QWidget::keyPressEvent(event);
+}
 
 void QtFinderWindowPrivate::setSearchKeywords(const QtFinder::Cmd cmd,
                                               const QString &keywords) {
@@ -32,21 +48,53 @@ void QtFinderWindowPrivate::clearSearchKeywords() {
 
 QString QtFinderWindowPrivate::currentDirectory() const { return directory_; }
 
-void QtFinderWindowPrivate::openCandidateAsPath(int index) {
-  auto item = ui.quickfixWidget->currentItem();
-  if (!item) {
-    emit candidateEmpty();
+void QtFinderWindowPrivate::selectCandidateAsPath(int row) {
+  auto text = selectCandidate(row);
+  if (text.isEmpty()) {
     return;
   }
-  auto text = item->text();
-
   /// the text maybe a relative path or a absolute path,
   /// but we need convert relative path to absolute path
   QFileInfo fileInfo(text);
   if (!fileInfo.isAbsolute()) {
     fileInfo = directory_ + "/" + text;
   }
-  emit openPathChanged(fileInfo.absoluteFilePath());
+  emit selectedPathChanged(fileInfo.absoluteFilePath());
+}
+
+void QtFinderWindowPrivate::addCandidate(const QString &candidate) {
+  ui.quickfixWidget->addCandidate(candidate);
+}
+
+int QtFinderWindowPrivate::candidateSize() {
+  return ui.quickfixWidget->count();
+}
+
+QString QtFinderWindowPrivate::selectCandidate(int row) {
+  auto item = ui.quickfixWidget->item(row);
+  if (!item) {
+    emit candidateEmpty();
+    return "";
+  }
+  auto text = item->text();
+  return text;
+}
+
+void QtFinderWindowPrivate::shortcutKeyHandler(Qt::Key key) {
+  switch (key) {
+  case Qt::Key_Enter | Qt::Key_Control: {
+    selectCandidateAsPath(ui.quickfixWidget->currentRow());
+    break;
+  }
+  case Qt::Key_Down: {
+    ui.quickfixWidget->moveNextCandidate();
+    break;
+  }
+  case Qt::Key_Up: {
+    ui.quickfixWidget->movePreviousCandidate();
+    break;
+  }
+  }
 }
 
 static QString fromQtFinderCmd(QtFinder::Cmd cmd) { return ""; }

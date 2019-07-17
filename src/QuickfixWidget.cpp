@@ -47,20 +47,16 @@ void QuickfixWidget::addCandidate(const QString &candidate) {
   updateCurrentRow(SelectOpt::kKeep);
 }
 
+void QtFinder::QuickfixWidget::moveNextCandidate() {
+  updateCurrentRow(SelectOpt::kDown);
+}
+
+void QtFinder::QuickfixWidget::movePreviousCandidate() {
+  updateCurrentRow(SelectOpt::kUp);
+}
+
 void QuickfixWidget::keyPressEvent(QKeyEvent *event) {
   auto key = key_press_event(event);
-  switch (key) {
-  case Qt::Key_Down: {
-    updateCurrentRow(SelectOpt::kDown);
-    break;
-  }
-  case Qt::Key_Up: {
-    updateCurrentRow(SelectOpt::kUp);
-    break;
-  }
-  default:
-    break;
-  }
   if (key != Qt::Key_unknown) {
     emit shortcutKeyPressed(key);
     return;
