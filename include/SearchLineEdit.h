@@ -41,13 +41,6 @@ signals:
    */
   void keywordsEmpty();
 
-  /**@brief emited when some key pressed
-     ctrl+n/j will convert to down key
-     ctrl+p/k will convert to up key
-     enter/return/tab will convert to enter
-   */
-  void shortcutKeyPressed(Qt::Key key);
-
 private:
   typedef std::function<void(const QStringList &keywords)> cmdEmiter;
   void parseUserInput(const QString &text);

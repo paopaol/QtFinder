@@ -13,9 +13,6 @@ private slots:
   void keywordsIsEmpty_setKeywords_gotSignalKeywordsChanged();
   void keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty();
   void candidatesIsEmpty_insert2Candidates_display2Candidates();
-
-private:
-  template <class T> void testSimulateShortcutKey(T *widget);
 };
 
 void GuiComponentsTest::
@@ -83,20 +80,6 @@ void GuiComponentsTest::
   QTest::keyPress(&lineEdit, 'a', Qt::ControlModifier, 200);
   QTest::keyPress(&lineEdit, Qt::Key_Delete, Qt::NoModifier, 3000);
   QCOMPARE(spy.count(), 1);
-}
-
-template <class T> void GuiComponentsTest::testSimulateShortcutKey(T *widget) {
-  widget->show();
-  QSignalSpy spy(widget, &T::shortcutKeyPressed);
-
-  for (auto &shortcutKey : shortcutKeyTable()) {
-    QTest::keyPress(widget, shortcutKey.Key, shortcutKey.Modifier, 10);
-    QCOMPARE(spy.count(), 1);
-
-    auto arguments = spy.takeFirst();
-
-    QCOMPARE(qvariant_cast<Qt::Key>(arguments.at(0)), shortcutKey.AliasKey);
-  }
 }
 
 void GuiComponentsTest::
