@@ -17,10 +17,10 @@ set(will_test_files
   "../src/QtFinderWindow.cpp"
   "../include/QtFinderWindow.h")
 
-add_executable(gui_unit_test ${will_test_files} ui_main_delegete_test.cpp)
-target_include_directories(gui_unit_test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(gui_unit_test Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Test)
-add_test(gui_unit_test gui_unit_test)
+add_executable(GuiComponentsTest ${will_test_files} GuiComponentsTest.cpp)
+target_include_directories(GuiComponentsTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(GuiComponentsTest Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Test)
+add_test(GuiComponentsTest GuiComponentsTest)
 
 
 # add_executable(gui_main_window_test ${will_test_files} gui_main_window_test.cpp)

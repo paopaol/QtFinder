@@ -2,25 +2,23 @@
 #include <QTest>
 
 #include <Events.h>
-#include <SearchLineEdit.h>
 #include <QtFinderWindow.h>
+#include <SearchLineEdit.h>
 
-class GuiMainWindowPrivateTest : public QObject {
+class GuiComponentsTest : public QObject {
   Q_OBJECT
 
 private slots:
   void keywordsIsEmpty_inputKeywords_gotSignalKeywordsChanged();
   void keywordsIsEmpty_setKeywords_gotSignalKeywordsChanged();
   void keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty();
-  void typeShortcutKey_gotSignalShortcutKeyPressed();
   void candidatesIsEmpty_insert2Candidates_display2Candidates();
-  void quickfixCurrentRowStayHere_moveDownUp_Works();
 
 private:
   template <class T> void testSimulateShortcutKey(T *widget);
 };
 
-void GuiMainWindowPrivateTest::
+void GuiComponentsTest::
     keywordsIsEmpty_inputKeywords_gotSignalKeywordsChanged() {
   QtFinder::SearchLineEdit lineEdit;
 
@@ -46,8 +44,7 @@ void GuiMainWindowPrivateTest::
                                    << "keywords");
 }
 
-void GuiMainWindowPrivateTest::
-    keywordsIsEmpty_setKeywords_gotSignalKeywordsChanged() {
+void GuiComponentsTest::keywordsIsEmpty_setKeywords_gotSignalKeywordsChanged() {
   QtFinder::SearchLineEdit lineEdit;
 
   lineEdit.show();
@@ -71,7 +68,7 @@ void GuiMainWindowPrivateTest::
   QCOMPARE(keywords, QStringList() << "keywords");
 }
 
-void GuiMainWindowPrivateTest::
+void GuiComponentsTest::
     keywordsNotEmpty_clearKeyWords_gotSignalKeywordsEmpty() {
 
   QtFinder::SearchLineEdit lineEdit;
@@ -88,16 +85,7 @@ void GuiMainWindowPrivateTest::
   QCOMPARE(spy.count(), 1);
 }
 
-void GuiMainWindowPrivateTest::typeShortcutKey_gotSignalShortcutKeyPressed() {
-  QtFinder::SearchLineEdit lineEdit;
-  QtFinder::QuickfixWidget quickfixWidget;
-
-  testSimulateShortcutKey(&lineEdit);
-  testSimulateShortcutKey(&quickfixWidget);
-}
-
-template <class T>
-void GuiMainWindowPrivateTest::testSimulateShortcutKey(T *widget) {
+template <class T> void GuiComponentsTest::testSimulateShortcutKey(T *widget) {
   widget->show();
   QSignalSpy spy(widget, &T::shortcutKeyPressed);
 
@@ -111,7 +99,7 @@ void GuiMainWindowPrivateTest::testSimulateShortcutKey(T *widget) {
   }
 }
 
-void GuiMainWindowPrivateTest::
+void GuiComponentsTest::
     candidatesIsEmpty_insert2Candidates_display2Candidates() {
   QtFinder::QuickfixWidget quickfixWidget;
 
@@ -124,24 +112,5 @@ void GuiMainWindowPrivateTest::
   QCOMPARE(quickfixWidget.count(), 2);
 }
 
-void GuiMainWindowPrivateTest::quickfixCurrentRowStayHere_moveDownUp_Works() {
-  QtFinder::QuickfixWidget quickfixWidget;
-  quickfixWidget.show();
-  QCOMPARE(quickfixWidget.currentRow(), -1);
-  quickfixWidget.addCandidate("d:/123/111.txt");
-  quickfixWidget.addCandidate("c:/123/111/txt");
-
-  QCOMPARE(quickfixWidget.currentRow(), 0);
-
-  QTest::keyPress(&quickfixWidget, Qt::Key_Up, Qt::NoModifier, 500);
-  QCOMPARE(quickfixWidget.currentRow(), 0);
-
-  QTest::keyPress(&quickfixWidget, Qt::Key_Down, Qt::NoModifier, 500);
-  QCOMPARE(quickfixWidget.currentRow(), 1);
-
-  QTest::keyPress(&quickfixWidget, Qt::Key_Down, Qt::NoModifier, 500);
-  QCOMPARE(quickfixWidget.currentRow(), 1);
-}
-
-QTEST_MAIN(GuiMainWindowPrivateTest)
-#include "ui_main_delegete_test.moc"
+QTEST_MAIN(GuiComponentsTest)
+#include "GuiComponentsTest.moc"
