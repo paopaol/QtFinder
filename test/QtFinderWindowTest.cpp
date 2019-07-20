@@ -1,9 +1,9 @@
 #include <QSignalSpy>
 #include <QTemporaryFile>
 #include <QTest>
-#include <private/QtFinderWindow_p.h>
+#include <QtFinderWindow.h>
 
-class QtFinderWindowPrivateTest : public QObject {
+class QtFinderWindowTest : public QObject {
   Q_OBJECT
 private slots:
   void defaultDirectoryIsHome();
@@ -15,17 +15,17 @@ private slots:
   void hasSomeCandidates_moveDownUp_Works();
 };
 
-void QtFinderWindowPrivateTest::defaultDirectoryIsHome() {
-  QtFinderWindowPrivate win;
+void QtFinderWindowTest::defaultDirectoryIsHome() {
+  QtFinderWindow win;
   QCOMPARE(win.currentDirectory(), QString("~"));
 }
 
-void QtFinderWindowPrivateTest::
+void QtFinderWindowTest::
     keywordsIsEmpty_setFdKeywords_gotSignalFdKeywordsChanged() {
-  QtFinderWindowPrivate win;
+  QtFinderWindow win;
   win.show();
 
-  QSignalSpy spy(&win, &QtFinderWindowPrivate::searchKeywordsChanged);
+  QSignalSpy spy(&win, &QtFinderWindow::searchKeywordsChanged);
 
   win.setFdCmdTriggerDelay(3000);
   win.setSearchKeywords(QtFinder::Cmd::kFd, "search keywords");
@@ -41,40 +41,40 @@ void QtFinderWindowPrivateTest::
   QCOMPARE(cmd, QtFinder::Cmd::kFd);
 }
 
-void QtFinderWindowPrivateTest::
+void QtFinderWindowTest::
     keywordsNotEmpty_clearKeywords_gotSignalKeywordsEmpty() {
-  QtFinderWindowPrivate win;
+  QtFinderWindow win;
 
-  QSignalSpy spy(&win, &QtFinderWindowPrivate::keywordsEmpty);
+  QSignalSpy spy(&win, &QtFinderWindow::keywordsEmpty);
   win.setSearchKeywords(QtFinder::Cmd::kQuickfix, "keywords");
   win.clearSearchKeywords();
   QCOMPARE(spy.count(), 1);
 }
 
-void QtFinderWindowPrivateTest::
+void QtFinderWindowTest::
     candidateIsEmpty_selectCandidate_gotSignalCandidateEmpty() {
-  QtFinderWindowPrivate win;
-  QSignalSpy spy(&win, &QtFinderWindowPrivate::candidateEmpty);
+  QtFinderWindow win;
+  QSignalSpy spy(&win, &QtFinderWindow::candidateEmpty);
 
   win.selectCandidateAsPath(0);
   QCOMPARE(spy.count(), 1);
 }
 
-void QtFinderWindowPrivateTest::candidateisEmpty_addTwoCandidates_sizeIsTwo() {
-  QtFinderWindowPrivate win;
+void QtFinderWindowTest::candidateisEmpty_addTwoCandidates_sizeIsTwo() {
+  QtFinderWindow win;
 
   win.addCandidate("candidate_1");
   win.addCandidate("candidate_2");
   QCOMPARE(win.candidateSize(), 2);
 }
 
-void QtFinderWindowPrivateTest::
+void QtFinderWindowTest::
     hasSomeCandidates_selectCandidate_gotSelectAsPathSignal() {
-  QtFinderWindowPrivate win;
+  QtFinderWindow win;
 
   win.show();
 
-  QSignalSpy spy(&win, &QtFinderWindowPrivate::selectedPathChanged);
+  QSignalSpy spy(&win, &QtFinderWindow::selectedPathChanged);
 
   QTemporaryFile f1("f1");
   QTemporaryFile f2("f2");
@@ -92,12 +92,12 @@ void QtFinderWindowPrivateTest::
   QCOMPARE(spy.count(), 1);
 }
 
-void QtFinderWindowPrivateTest::hasSomeCandidates_moveDownUp_Works() {
-  QtFinderWindowPrivate win;
+void QtFinderWindowTest::hasSomeCandidates_moveDownUp_Works() {
+  QtFinderWindow win;
 
   win.show();
 
-  QSignalSpy spy(&win, &QtFinderWindowPrivate::selectedPathChanged);
+  QSignalSpy spy(&win, &QtFinderWindow::selectedPathChanged);
 
   QTemporaryFile f1("f1");
   QTemporaryFile f2("f2");
@@ -119,5 +119,5 @@ void QtFinderWindowPrivateTest::hasSomeCandidates_moveDownUp_Works() {
   QCOMPARE(spy.count(), 1);
 }
 
-QTEST_MAIN(QtFinderWindowPrivateTest)
-#include "QtFinderWindowPrivateTest.moc"
+QTEST_MAIN(QtFinderWindowTest)
+#include "QtFinderWindowTest.moc"

@@ -3,7 +3,7 @@
 
 #include <Events.h>
 #include <SearchLineEdit.h>
-#include <private/QtFinderWindow_p.h>
+#include <QtFinderWindow.h>
 
 class GuiMainWindowPrivateTest : public QObject {
   Q_OBJECT
