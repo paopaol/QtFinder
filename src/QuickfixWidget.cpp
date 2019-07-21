@@ -1,5 +1,4 @@
 #include <QFileIconProvider>
-#include <QuickfixLabel.h>
 #include <QuickfixWidget.h>
 
 #include <QKeyEvent>

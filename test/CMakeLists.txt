@@ -33,3 +33,13 @@ add_executable(QtFinderWindowTest ${will_test_files} QtFinderWindowTest.cpp)
 target_include_directories(QtFinderWindowTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(QtFinderWindowTest Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Test)
 add_test(QtFinderWindowTest QtFinderWindowTest)
+
+
+set(qt_finder_tool_srcs
+  ../include/QtFinderTool.h
+  "../src/QtFinderTool.cpp"
+  )
+
+add_executable(QtFinderToolTest ${qt_finder_tool_srcs} QtFinderToolTest.cpp)
+target_link_libraries(QtFinderToolTest Qt5::Core Qt5::Test)
+add_test(QtFinderToolTest QtFinderToolTest)
