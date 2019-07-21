@@ -1,4 +1,5 @@
 #include <QSignalSpy>
+#include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QTest>
 #include <QtFinderWindow.h>
@@ -7,6 +8,7 @@ class QtFinderWindowTest : public QObject {
   Q_OBJECT
 private slots:
   void defaultDirectoryIsHome();
+  void currentDirectoryIsHome_setCurrentDirectory_Works();
   void keywordsIsEmpty_setFdKeywords_gotSignalFdKeywordsChanged();
   void keywordsNotEmpty_clearKeywords_gotSignalKeywordsEmpty();
   void candidateIsEmpty_selectCandidate_gotSignalCandidateEmpty();
@@ -18,6 +20,16 @@ private slots:
 void QtFinderWindowTest::defaultDirectoryIsHome() {
   QtFinderWindow win;
   QCOMPARE(win.currentDirectory(), QString("~"));
+}
+
+void QtFinderWindowTest::currentDirectoryIsHome_setCurrentDirectory_Works() {
+  QtFinderWindow win;
+
+  QTemporaryDir dir;
+
+  win.setCurrentDirectory(dir.filePath("test"));
+
+  QCOMPARE(win.currentDirectory(), dir.filePath("test"));
 }
 
 void QtFinderWindowTest::

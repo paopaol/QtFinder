@@ -18,10 +18,11 @@ public:
   void setFdCmdTriggerDelay(int delayMs);
   void clearSearchKeywords();
   QString currentDirectory() const;
+  void setCurrentDirectory(const QString &absolutePath);
   void selectCandidateAsPath(int row);
   void selectCandidateAsDirectory(int row);
   void addCandidate(const QString &candidate);
-  int candidateSize();
+  int candidateSize() const;
 
   virtual ~QtFinderWindow() noexcept;
 
