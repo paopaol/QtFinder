@@ -46,8 +46,8 @@ void QtFinderWindowTest::
 
   QCOMPARE(spy.count(), 1);
   auto arguments = spy.takeFirst();
-  auto keywords = arguments.at(0).toStringList();
-  auto cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(1));
+  auto cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(0));
+  auto keywords = arguments.at(1).toStringList();
   QCOMPARE(keywords, QStringList() << "search"
                                    << "keywords");
   QCOMPARE(cmd, QtFinder::Cmd::kFd);

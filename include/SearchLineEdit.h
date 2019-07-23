@@ -36,7 +36,7 @@ signals:
    * @details the input key word length must >= 3 chars
    * @return void
    */
-  void searchKeywordsChanged(const QStringList &keywords, QtFinder::Cmd cmd);
+  void searchKeywordsChanged(QtFinder::Cmd cmd, const QStringList &keywords);
   /**@brief search line edit buffer is empty
    */
   void keywordsEmpty();

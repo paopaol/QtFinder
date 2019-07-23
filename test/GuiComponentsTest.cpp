@@ -34,8 +34,8 @@ void GuiComponentsTest::
   QList<QVariant> arguments = spy.takeFirst();
   QCOMPARE(arguments.size(), 2);
 
-  auto keywords = arguments.at(0).toStringList();
-  QtFinder::Cmd cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(1));
+  QtFinder::Cmd cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(0));
+  auto keywords = arguments.at(1).toStringList();
   QCOMPARE(cmd, QtFinder::Cmd::kFd);
   QCOMPARE(keywords, QStringList() << "search"
                                    << "keywords");
@@ -59,8 +59,8 @@ void GuiComponentsTest::keywordsIsEmpty_setKeywords_gotSignalKeywordsChanged() {
   QList<QVariant> arguments = spy.takeFirst();
   QCOMPARE(arguments.size(), 2);
 
-  auto keywords = arguments.at(0).toStringList();
-  auto cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(1));
+  auto cmd = qvariant_cast<QtFinder::Cmd>(arguments.at(0));
+  auto keywords = arguments.at(1).toStringList();
   QCOMPARE(cmd, QtFinder::Cmd::kQuickfix);
   QCOMPARE(keywords, QStringList() << "keywords");
 }

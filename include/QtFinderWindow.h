@@ -30,7 +30,7 @@ protected:
   void keyPressEvent(QKeyEvent *) override;
 
 signals:
-  void searchKeywordsChanged(const QStringList &keywords, QtFinder::Cmd cmd);
+  void searchKeywordsChanged(QtFinder::Cmd cmd, const QStringList &keywords);
   void keywordsEmpty();
   void selectedPathChanged(const QString &path);
   void selectedDirectoryChanged(const QString &directory);

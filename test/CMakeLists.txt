@@ -43,3 +43,13 @@ set(qt_finder_tool_srcs
 add_executable(QtFinderToolTest ${qt_finder_tool_srcs} QtFinderToolTest.cpp)
 target_link_libraries(QtFinderToolTest Qt5::Core Qt5::Test)
 add_test(QtFinderToolTest QtFinderToolTest)
+
+set(qt_finder_app_srcs
+  "../include/QtFinderApp.h"
+  "../src/QtFinderApp.cpp"
+  "../src/QtFinderApp_p.h"
+  "../src/QtFinderApp_p.cpp")
+
+add_executable(QtFinderAppTest ${qt_finder_app_srcs} QtFinderappTest.cpp)
+target_link_libraries(QtFinderAppTest Qt5::Core Qt5::Widgets Qt5::Test)
+add_test(QtFinderAppTest QtFinderAppTest)
