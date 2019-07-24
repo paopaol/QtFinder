@@ -1,6 +1,11 @@
 find_package(Qt5 REQUIRED Test)
 
-enable_testing()
+# Prevent overriding the parent project's compiler/linker
+# settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thrd/googletest googletest)
+include_directories(${CMAKE_SOURCE_DIR}/thrd/googletest/googlemock/include)
+include_directories(${CMAKE_SOURCE_DIR}/thrd/googletest/googletest/include)
 
 qt5_wrap_ui(
   ui_files
@@ -51,5 +56,5 @@ set(qt_finder_app_srcs
   "../src/QtFinderApp_p.cpp")
 
 add_executable(QtFinderAppTest ${qt_finder_app_srcs} QtFinderappTest.cpp)
-target_link_libraries(QtFinderAppTest Qt5::Core Qt5::Widgets Qt5::Test)
+target_link_libraries(QtFinderAppTest Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Test gmock)
 add_test(QtFinderAppTest QtFinderAppTest)

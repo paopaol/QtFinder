@@ -19,7 +19,7 @@ public:
   void clearSearchKeywords();
   QString currentDirectory() const;
   void setCurrentDirectory(const QString &absolutePath);
-  void selectCandidateAsPath(int row);
+  void selectCandidateAsFile(int row);
   void selectCandidateAsDirectory(int row);
   void addCandidate(const QString &candidate);
   int candidateSize() const;
@@ -32,7 +32,7 @@ protected:
 signals:
   void searchKeywordsChanged(QtFinder::Cmd cmd, const QStringList &keywords);
   void keywordsEmpty();
-  void selectedPathChanged(const QString &path);
+  void selectedFilechanged(const QString &path);
   void selectedDirectoryChanged(const QString &directory);
   void candidateEmpty();
   void shortcutKeyPressed(Qt::Key key);

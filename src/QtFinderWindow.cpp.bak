@@ -106,7 +106,7 @@ QtFinderWindow::~QtFinderWindow() noexcept {}
 //     fileInfo = directory_ + "/" + text;
 //   }
 //   if (!fileInfo.isDir()) {
-//     openDirectoryOfFile(fileInfo.absoluteFilePath());
+//     openWithFileManager(fileInfo.absoluteFilePath());
 //     return;
 //   }
 //   directory_ = fileInfo.absoluteFilePath();
@@ -127,7 +127,7 @@ QtFinderWindow::~QtFinderWindow() noexcept {}
 //   if (!fileInfo.isAbsolute()) {
 //     fileInfo = directory_ + "/" + text;
 //   }
-//   openDirectoryOrFile(fileInfo.absoluteFilePath());
+//   openFile(fileInfo.absoluteFilePath());
 // }
 
 // void QtFinderWindow::fdSearch(const QStringList &keywords) {
@@ -173,7 +173,7 @@ QtFinderWindow::~QtFinderWindow() noexcept {}
 //   showDirectory();
 // }
 
-// void QtFinderWindow::openDirectoryOfFile(const QString &filePath) {
+// void QtFinderWindow::openWithFileManager(const QString &filePath) {
 //   fs::path absPath(filePath.toStdString());
 //   QString dir;
 // #ifdef Q_OS_WIN
@@ -189,7 +189,7 @@ QtFinderWindow::~QtFinderWindow() noexcept {}
 // #endif
 // }
 
-// void QtFinderWindow::openDirectoryOrFile(const QString &path) {
+// void QtFinderWindow::openFile(const QString &path) {
 //   QUrl url = QUrl::fromLocalFile(path);
 //   QDesktopServices::openUrl(url);
 // }

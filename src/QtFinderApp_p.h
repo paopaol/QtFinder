@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QScopedPointer>
+#include <QtFinderApp.h>
 #include <mutex>
 #include <qtfindercmd.h>
 
@@ -13,7 +14,8 @@ class AbstractDesktopService;
 class QtFinderAppPrivate final : public QObject {
   Q_OBJECT
 public:
-  QtFinderAppPrivate(QObject *parent = nullptr) : QObject(parent) {}
+  QtFinderAppPrivate(QtFinderApp *app) : q_ptr(app), QObject(app) {}
+  virtual ~QtFinderAppPrivate() {}
 
 private:
   void prepare();
@@ -26,6 +28,8 @@ private:
   QScopedPointer<AbstractFileSystemScanner> fileSystemScanner_;
   QScopedPointer<AbstractDesktopService> desktopService_;
   std::once_flag onceFlag_;
+  QtFinderApp *const q_ptr;
+  Q_DECLARE_PUBLIC(QtFinderApp);
 
   friend class QtFinderApp;
 };

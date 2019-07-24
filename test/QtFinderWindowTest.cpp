@@ -13,7 +13,7 @@ private slots:
   void keywordsNotEmpty_clearKeywords_gotSignalKeywordsEmpty();
   void candidateIsEmpty_selectCandidate_gotSignalCandidateEmpty();
   void candidateisEmpty_addTwoCandidates_sizeIsTwo();
-  void hasSomeCandidates_selectCandidate_gotSelectAsPathSignal();
+  void hasSomeCandidates_selectCandidate_gotSelectAsFileSignal();
   void hasSomeCandidates_moveDownUp_Works();
 };
 
@@ -68,7 +68,7 @@ void QtFinderWindowTest::
   QtFinderWindow win;
   QSignalSpy spy(&win, &QtFinderWindow::candidateEmpty);
 
-  win.selectCandidateAsPath(0);
+  win.selectCandidateAsFile(0);
   QCOMPARE(spy.count(), 1);
 }
 
@@ -81,12 +81,12 @@ void QtFinderWindowTest::candidateisEmpty_addTwoCandidates_sizeIsTwo() {
 }
 
 void QtFinderWindowTest::
-    hasSomeCandidates_selectCandidate_gotSelectAsPathSignal() {
+    hasSomeCandidates_selectCandidate_gotSelectAsFileSignal() {
   QtFinderWindow win;
 
   win.show();
 
-  QSignalSpy spy(&win, &QtFinderWindow::selectedPathChanged);
+  QSignalSpy spy(&win, &QtFinderWindow::selectedDirectoryChanged);
 
   QTemporaryFile f1("f1");
   QTemporaryFile f2("f2");
@@ -97,7 +97,7 @@ void QtFinderWindowTest::
   win.addCandidate(f1.fileName());
   win.addCandidate(f2.fileName());
 
-  // win.selectCandidateAsPath(1);
+  // win.selectCandidateAsFile(1);
   QTest::keyPress(&win, Qt::Key_Enter, Qt::ControlModifier);
   spy.wait(3000);
 
@@ -109,7 +109,7 @@ void QtFinderWindowTest::hasSomeCandidates_moveDownUp_Works() {
 
   win.show();
 
-  QSignalSpy spy(&win, &QtFinderWindow::selectedPathChanged);
+  QSignalSpy spy(&win, &QtFinderWindow::selectedDirectoryChanged);
 
   QTemporaryFile f1("f1");
   QTemporaryFile f2("f2");
@@ -120,7 +120,7 @@ void QtFinderWindowTest::hasSomeCandidates_moveDownUp_Works() {
   win.addCandidate(f1.fileName());
   win.addCandidate(f2.fileName());
 
-  // win.selectCandidateAsPath(1);
+  // win.selectCandidateAsFile(1);
   QTest::keyPress(&win, Qt::Key_Down, Qt::NoModifier, 1000);
   QTest::keyPress(&win, Qt::Key_Down, Qt::NoModifier, 1000);
   QTest::keyPress(&win, Qt::Key_Up, Qt::NoModifier, 1000);

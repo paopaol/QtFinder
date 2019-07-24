@@ -55,10 +55,10 @@ void QtFinderWindow::setCurrentDirectory(const QString &absolutePath) {
   ui.promptLabel->setText(directory_);
 }
 
-void QtFinderWindow::selectCandidateAsPath(int row) {
+void QtFinderWindow::selectCandidateAsFile(int row) {
   auto text = selectCandidate(row);
   if (!text.isEmpty()) {
-    emit selectedPathChanged(text);
+    emit selectedFilechanged(text);
   }
 }
 
@@ -97,7 +97,11 @@ QString QtFinderWindow::selectCandidate(int row) {
 void QtFinderWindow::shortcutKeyHandler(Qt::Key key) {
   switch (key) {
   case Qt::Key_Enter | Qt::Key_Control: {
-    selectCandidateAsPath(ui.quickfixWidget->currentRow());
+    selectCandidateAsDirectory(ui.quickfixWidget->currentRow());
+    break;
+  }
+  case Qt::Key_Enter: {
+    selectCandidateAsFile(ui.quickfixWidget->currentRow());
     break;
   }
   case Qt::Key_Down: {
