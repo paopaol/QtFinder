@@ -45,7 +45,7 @@ public:
     emit selectedFilechanged("/mock/test/directory");
   }
   MOCK_METHOD(void, selectCandidateAsDirectory, (int), (override));
-  MOCK_METHOD1(addCandidate, void(const QString &candidate));
+  MOCK_METHOD(void, addCandidate, (const QString &candidate), (override));
   MOCK_METHOD(int, candidateSize, (), (const));
   MOCK_METHOD(void, keyPressEvent, (QKeyEvent *), (override));
   // protected:
