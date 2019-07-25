@@ -20,6 +20,7 @@ public:
 private:
   void prepare();
   void onSearchKeywordsChanged(QtFinder::Cmd cmd, const QStringList &keywords);
+  void onSelectedFileChanged(const QString &file);
 
   Q_DISABLE_COPY(QtFinderAppPrivate);
 

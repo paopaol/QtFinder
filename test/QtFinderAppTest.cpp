@@ -1,5 +1,6 @@
 #include <QSignalSpy>
 #include <QString>
+#include <QStringList>
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QTest>
@@ -7,17 +8,6 @@
 #include <gmock/gmock.h>
 
 using namespace ::testing;
-
-class QtFinderAppTest : public QObject {
-  Q_OBJECT
-private slots:
-  void initTestCase() {
-    int argc = 0;
-    char *argv[] = {""};
-    ::testing::InitGoogleMock(&argc, argv);
-  }
-  void candidateIsDirectory_selectCandidateAsFile_ScanThePath();
-};
 
 class MockFinderTool final : public AbstractQtFinderTool {
   Q_OBJECT
@@ -40,18 +30,17 @@ public:
   void setFdCmdTriggerDelay(int delayMs) override {}
   void clearSearchKeywords() override {}
   QString currentDirectory() const override { return ""; }
-  void setCurrentDirectory(const QString &absolutePath) override {}
-  void selectCandidateAsFile(int row) override {
-    emit selectedFilechanged("/mock/test/directory");
-  }
+  MOCK_METHOD(void, setCurrentDirectory, (const QString &absolutePath),
+              (override));
+  // void selectCandidateAsFile(int row) override {
+  //   emit selectedFilechanged("/mock/test/directory");
+  // }
+  MOCK_METHOD(void, selectCandidateAsFile, (int row), (override));
   MOCK_METHOD(void, selectCandidateAsDirectory, (int), (override));
   MOCK_METHOD(void, addCandidate, (const QString &candidate), (override));
+  MOCK_METHOD(void, setCandidates, (const QStringList &candidates), (override));
   MOCK_METHOD(int, candidateSize, (), (const));
   MOCK_METHOD(void, keyPressEvent, (QKeyEvent *), (override));
-  // protected:
-  //   void keyPressEvent(QKeyEvent *e) {
-  //	QWidget::keyPressEvent(e);
-  // }
 };
 
 class MockDesktopService final : public AbstractDesktopService {
@@ -66,11 +55,56 @@ class MockFileSystemScanner final : public AbstractFileSystemScanner {
 public:
   MockFileSystemScanner() {}
   virtual ~MockFileSystemScanner() {}
-  QStringList scanDirectory() override {
-    QStringList entryList;
-    entryList << "/mock/test/directory";
-    return entryList;
+  MOCK_METHOD(QStringList, scanDirectory, (const QString &dir), (override));
+};
+
+class QtFinderAppTest : public QObject {
+  Q_OBJECT
+private slots:
+  void initTestCase() {
+    int argc = 0;
+    char *argv[] = {""};
+    ::testing::InitGoogleMock(&argc, argv);
   }
+
+  void init() {
+    app_.reset(new QtFinderApp);
+
+    finderTool_.reset(new MockFinderTool);
+    finderWindow_.reset(new MockFinderWindow);
+    desktopService_.reset(new MockDesktopService);
+    fileSystemScanner_.reset(new MockFileSystemScanner);
+    tool_ = static_cast<MockFinderTool *>(finderTool_.data());
+    win_ = static_cast<MockFinderWindow *>(finderWindow_.data());
+    desktop_ = static_cast<MockDesktopService *>(desktopService_.data());
+    scanner_ = static_cast<MockFileSystemScanner *>(fileSystemScanner_.data());
+  }
+
+  void cleanup() {
+    app_.reset(nullptr);
+    finderTool_.reset(nullptr);
+    finderWindow_.reset(nullptr);
+    desktopService_.reset(nullptr);
+    fileSystemScanner_.reset(nullptr);
+    tool_ = nullptr;
+    win_ = nullptr;
+    desktop_ = nullptr;
+    scanner_ = nullptr;
+  }
+
+  void candidateIsFile_openFile_Works();
+  // void candidateIsDirectory_scanDirectory_Works();
+
+private:
+  QScopedPointer<QtFinderApp> app_;
+  QScopedPointer<AbstractQtFinderTool> finderTool_;
+  MockFinderTool *tool_;
+  QScopedPointer<AbstractQtFinderWindow> finderWindow_;
+  MockFinderWindow *win_;
+  QScopedPointer<AbstractDesktopService> desktopService_;
+  MockDesktopService *desktop_;
+  QScopedPointer<AbstractFileSystemScanner> fileSystemScanner_;
+  MockFileSystemScanner *scanner_;
 };
 
 ACTION_P2(emitCandidateReady, tool, candidate) {
@@ -83,37 +117,30 @@ ACTION_P2(emitSelectedFileChanged, win, dirOrFile) {
 
 ACTION_P2(validateOpenDirectoryOrFile, p1, p2) { QCOMPARE(p1, p2); }
 
-void QtFinderAppTest::candidateIsDirectory_selectCandidateAsFile_ScanThePath() {
-  QtFinderApp app;
-  app.setWindowTitle("test");
-  const char *searchKeywords = "foo bar directory";
-  const char *searchResult = "/tmp/foo/bar/directory";
+void QtFinderAppTest::candidateIsFile_openFile_Works() {
+  QTemporaryFile tempFile("foobarfile");
+  tempFile.open();
 
-  QScopedPointer<AbstractQtFinderTool> finderTool(new MockFinderTool);
-  QScopedPointer<AbstractQtFinderWindow> finderWindow(new MockFinderWindow);
-  QScopedPointer<AbstractDesktopService> desktopService(new MockDesktopService);
-  QScopedPointer<AbstractFileSystemScanner> fileSystemScanner(
-      new MockFileSystemScanner);
+  const char *searchKeywords = "foo bar file";
 
-  auto tool = static_cast<MockFinderTool *>(finderTool.data());
-  EXPECT_CALL(*tool, startSearchOnDirectory(::testing::_, ::testing::_))
-      .WillOnce(emitCandidateReady(tool, searchResult));
-  auto win = static_cast<MockFinderWindow *>(finderWindow.data());
-  EXPECT_CALL(*win, addCandidate(::testing::_));
-  EXPECT_CALL(*win, keyPressEvent(::testing::_))
-      .WillOnce(emitSelectedFileChanged(win, searchResult));
+  QString searchResult = tempFile.fileName();
 
-  auto desktop = static_cast<MockDesktopService *>(desktopService.data());
-  EXPECT_CALL(*desktop, openFile(::testing::_))
+  EXPECT_CALL(*tool_, startSearchOnDirectory(::testing::_, ::testing::_))
+      .WillOnce(emitCandidateReady(tool_, searchResult));
+  EXPECT_CALL(*win_, addCandidate(::testing::_));
+  EXPECT_CALL(*win_, keyPressEvent(::testing::_))
+      .WillOnce(emitSelectedFileChanged(win_, searchResult));
+
+  EXPECT_CALL(*desktop_, openFile(::testing::_))
       .WillOnce(validateOpenDirectoryOrFile(searchResult, searchResult));
 
-  app.setFinderTool(finderTool);
-  app.setFinderWindow(finderWindow);
-  app.setDesktopService(desktopService);
-  app.setFileSystemScanner(fileSystemScanner);
+  app_->setFinderTool(finderTool_);
+  app_->setFinderWindow(finderWindow_);
+  app_->setDesktopService(desktopService_);
+  app_->setFileSystemScanner(fileSystemScanner_);
 
-  app.startSearch(QtFinder::Cmd::kFd, searchKeywords);
-  QTest::keyPress(win, Qt::Key_Enter, Qt::NoModifier);
+  app_->startSearch(QtFinder::Cmd::kFd, searchKeywords);
+  QTest::keyPress(win_, Qt::Key_Enter, Qt::NoModifier);
 }
 
 QTEST_MAIN(QtFinderAppTest)

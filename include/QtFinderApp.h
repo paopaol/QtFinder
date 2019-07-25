@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QWidget>
 #include <qtfindercmd.h>
-#include <QAbstractButton>
 
 class AbstractQtFinderTool : public QObject {
   Q_OBJECT
@@ -22,7 +21,8 @@ using AbstractQtFinderToolPtr = QScopedPointer<AbstractQtFinderTool>;
 class AbstractQtFinderWindow : public QWidget {
   Q_OBJECT
 public:
-  explicit AbstractQtFinderWindow(QWidget *parent = nullptr) :QWidget(parent) {}
+  explicit AbstractQtFinderWindow(QWidget *parent = nullptr)
+      : QWidget(parent) {}
   virtual ~AbstractQtFinderWindow() {}
   virtual void setSearchKeywords(const QtFinder::Cmd cmd,
                                  const QString &keywords) = 0;
@@ -33,6 +33,7 @@ public:
   virtual void selectCandidateAsFile(int row) = 0;
   virtual void selectCandidateAsDirectory(int row) = 0;
   virtual void addCandidate(const QString &candidate) = 0;
+  virtual void setCandidates(const QStringList &candidates) = 0;
   virtual int candidateSize() const = 0;
 
 signals:
@@ -45,8 +46,8 @@ signals:
 };
 using AbstractQtFinderWindowPtr = QScopedPointer<AbstractQtFinderWindow>;
 
-class AbstractDesktopService:public QObject {
-	Q_OBJECT
+class AbstractDesktopService : public QObject {
+  Q_OBJECT
 public:
   virtual ~AbstractDesktopService() {}
   virtual void openWithFileManager(const QString &path) = 0;
@@ -54,11 +55,11 @@ public:
 };
 using AbstractDesktopServicePtr = QScopedPointer<AbstractDesktopService>;
 
-class AbstractFileSystemScanner:public QObject {
-	Q_OBJECT
+class AbstractFileSystemScanner : public QObject {
+  Q_OBJECT
 public:
   virtual ~AbstractFileSystemScanner() {}
-  virtual QStringList scanDirectory() = 0;
+  virtual QStringList scanDirectory(const QString &directory) = 0;
 };
 using AbstractFileSystemScannerPtr = QScopedPointer<AbstractFileSystemScanner>;
 
@@ -78,7 +79,8 @@ public:
   void startSearch(const QtFinder::Cmd cmd, const QString &keywords);
 
 protected:
-  virtual void keyPressEvent(QKeyEvent *e)override;
+  virtual void keyPressEvent(QKeyEvent *e) override;
+
 private:
   Q_DECLARE_PRIVATE(QtFinderApp);
 
