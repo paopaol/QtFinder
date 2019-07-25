@@ -23,10 +23,8 @@ class MockFinderWindow final : public AbstractQtFinderWindow {
 public:
   MockFinderWindow() : AbstractQtFinderWindow() {}
   ~MockFinderWindow() {}
-  void setSearchKeywords(const QtFinder::Cmd cmd,
-                         const QString &keywords) override {
-    emit searchKeywordsChanged(cmd, QStringList() << keywords);
-  }
+  MOCK_METHOD(void, setSearchKeywords,
+              (const QtFinder::Cmd, const QString &keywords), (override));
   void setFdCmdTriggerDelay(int delayMs) override {}
   void clearSearchKeywords() override {}
   QString currentDirectory() const override { return ""; }
@@ -125,7 +123,7 @@ void QtFinderAppTest::candidateIsFile_openFile_Works() {
 
   QString searchResult = tempFile.fileName();
 
-  EXPECT_CALL(*tool_, startSearchOnDirectory(::testing::_, ::testing::_))
+  EXPECT_CALL(*win_, setSearchKeywords(::testing::_, ::testing::_))
       .WillOnce(emitCandidateReady(tool_, searchResult));
   EXPECT_CALL(*win_, addCandidate(::testing::_));
   EXPECT_CALL(*win_, keyPressEvent(::testing::_))
@@ -138,8 +136,9 @@ void QtFinderAppTest::candidateIsFile_openFile_Works() {
   app_->setFinderWindow(finderWindow_);
   app_->setDesktopService(desktopService_);
   app_->setFileSystemScanner(fileSystemScanner_);
+  app_->run();
 
-  app_->startSearch(QtFinder::Cmd::kFd, searchKeywords);
+  win_->setSearchKeywords(QtFinder::Cmd::kFd, searchKeywords);
   QTest::keyPress(win_, Qt::Key_Enter, Qt::NoModifier);
 }
 

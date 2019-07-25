@@ -1,9 +1,8 @@
 #include "QtFinderApp.h"
 #include "QtFinderApp_p.h"
 
-QtFinderApp::QtFinderApp(QWidget *parent)
-    : QWidget(parent) {
-	d_ptr.reset(new QtFinderAppPrivate(this));
+QtFinderApp::QtFinderApp(QWidget *parent) : QWidget(parent) {
+  d_ptr.reset(new QtFinderAppPrivate(this));
 }
 
 QtFinderApp::~QtFinderApp() noexcept {}
@@ -37,13 +36,9 @@ void QtFinderApp::setFileSystemScanner(
   d->fileSystemScanner_->setParent(this);
 }
 
-void QtFinderApp::startSearch(const QtFinder::Cmd cmd,
-                              const QString &keywords) {
+void QtFinderApp::run() {
   Q_D(QtFinderApp);
   d->prepare();
-  d->win_->setSearchKeywords(cmd, keywords);
 }
 
-void QtFinderApp::keyPressEvent(QKeyEvent *e) {
-	QWidget::keyPressEvent(e);
-}
+void QtFinderApp::keyPressEvent(QKeyEvent *e) { QWidget::keyPressEvent(e); }

@@ -76,7 +76,7 @@ public:
   void setDesktopService(AbstractDesktopServicePtr &desktopService);
   void setFileSystemScanner(AbstractFileSystemScannerPtr &fileSystemScanner);
 
-  void startSearch(const QtFinder::Cmd cmd, const QString &keywords);
+  void run();
 
 protected:
   virtual void keyPressEvent(QKeyEvent *e) override;
