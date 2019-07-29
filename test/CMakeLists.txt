@@ -18,6 +18,7 @@ set(will_test_files
   "../include/SearchLineEdit.h"
   "../src/QuickfixWidget.cpp"
   "../include/QuickfixWidget.h"
+  "../include/QtFinderAbstractComponents.h"
   "../src/Events.cpp"
   "../src/QtFinderWindow.cpp"
   "../include/QtFinderWindow.h")
@@ -53,6 +54,7 @@ set(qt_finder_app_srcs
   "../include/QtFinderApp.h"
   "../src/QtFinderApp.cpp"
   "../src/QtFinderApp_p.h"
+  "../include/QtFinderAbstractComponents.h"
   "../src/QtFinderApp_p.cpp")
 
 add_executable(QtFinderAppTest ${qt_finder_app_srcs} QtFinderappTest.cpp)
