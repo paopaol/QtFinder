@@ -24,7 +24,7 @@ public:
   explicit AbstractQtFinderWindow(QWidget *parent = nullptr)
       : QWidget(parent) {}
   virtual ~AbstractQtFinderWindow() {}
-  virtual void setSearchKeywords(const QtFinder::Cmd cmd,
+  virtual void setSearchKeywords(QtFinder::Cmd cmd,
                                  const QString &keywords) = 0;
   virtual void setFdCmdTriggerDelay(int delayMs) = 0;
   virtual void clearSearchKeywords() = 0;

@@ -23,8 +23,8 @@ class MockFinderWindow final : public AbstractQtFinderWindow {
 public:
   MockFinderWindow() : AbstractQtFinderWindow() {}
   ~MockFinderWindow() {}
-  MOCK_METHOD(void, setSearchKeywords,
-              (const QtFinder::Cmd, const QString &keywords), (override));
+  MOCK_METHOD(void, setSearchKeywords, (QtFinder::Cmd, const QString &keywords),
+              (override));
   void setFdCmdTriggerDelay(int delayMs) override {}
   void clearSearchKeywords() override {}
   QString currentDirectory() const override { return ""; }
