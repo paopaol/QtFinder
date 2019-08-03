@@ -1,6 +1,7 @@
 #ifndef QTFINDERAPP_P_H
 #define QTFINDERAPP_P_H
 
+#include <QHBoxLayout>
 #include <QObject>
 #include <QScopedPointer>
 #include <QtFinderApp.h>
@@ -14,7 +15,7 @@ class AbstractDesktopService;
 class QtFinderAppPrivate final : public QObject {
   Q_OBJECT
 public:
-  QtFinderAppPrivate(QtFinderApp *app) : q_ptr(app), QObject(app) {}
+  QtFinderAppPrivate(QtFinderApp *app) : QObject(app) {}
   virtual ~QtFinderAppPrivate() {}
 
 private:
@@ -29,8 +30,7 @@ private:
   QScopedPointer<AbstractFileSystemScanner> fileSystemScanner_;
   QScopedPointer<AbstractDesktopService> desktopService_;
   std::once_flag onceFlag_;
-  QtFinderApp *const q_ptr;
-  Q_DECLARE_PUBLIC(QtFinderApp);
+  QHBoxLayout layout_;
 
   friend class QtFinderApp;
 };

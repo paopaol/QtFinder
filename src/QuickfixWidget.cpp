@@ -8,7 +8,9 @@ namespace QtFinder {
 static QListWidgetItem *createFileItem(const QString &path, const QString &text,
                                        QListWidget *parent);
 
-QuickfixWidget::QuickfixWidget(QWidget *parent) : QListWidget(parent) {}
+QuickfixWidget::QuickfixWidget(QWidget *parent) : QListWidget(parent) {
+  setUniformItemSizes(true);
+}
 
 QuickfixWidget::~QuickfixWidget() noexcept {}
 
@@ -40,10 +42,10 @@ void QuickfixWidget::updateCurrentRow(SelectOpt opt) {
   }
 }
 
-void QuickfixWidget::addCandidate(const QString &candidate) {
-  addItem(candidate);
-  updateCurrentRow(SelectOpt::kKeep);
- }
+void QuickfixWidget::addCandidates(const QStringList &candidates) {
+  addItems(candidates);
+  scrollToBottom();
+}
 
 void QuickfixWidget::focusNextCandidate() {
   updateCurrentRow(SelectOpt::kDown);
@@ -52,7 +54,6 @@ void QuickfixWidget::focusNextCandidate() {
 void QuickfixWidget::focusPreviousCandidate() {
   updateCurrentRow(SelectOpt::kUp);
 }
-
 
 bool QuickfixWidget::focusNextPrevChild(bool next) { return false; }
 } // namespace QtFinder

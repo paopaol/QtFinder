@@ -16,7 +16,9 @@ public:
   void stop();
 
 signals:
-  void candidateReady(const QString &candidate);
+  void candidatesReady(const QStringList &candidates);
+  void started();
+  void stopped();
 
 private:
   QScopedPointer<QProcess> fd_;

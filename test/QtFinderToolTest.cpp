@@ -9,12 +9,14 @@ class QtFinderToolTest : public QObject {
   Q_OBJECT
 private slots:
   void createSomeTempFiles_inputSomeKeywords_Works();
+  void startSearch_goStartedSignal();
+  void stopSearch_goStoppedSignal();
 };
 
 void QtFinderToolTest::createSomeTempFiles_inputSomeKeywords_Works() {
   QtFinderTool tool;
 
-  QSignalSpy spy(&tool, &QtFinderTool::candidateReady);
+  QSignalSpy spy(&tool, &QtFinderTool::candidatesReady);
 
   QTemporaryDir tempDir;
   QTemporaryFile tempFile;
@@ -29,6 +31,25 @@ void QtFinderToolTest::createSomeTempFiles_inputSomeKeywords_Works() {
 
   spy.wait(1000);
 
+  QCOMPARE(spy.count(), 1);
+}
+
+void QtFinderToolTest::startSearch_goStartedSignal() {
+  QtFinderTool tool;
+
+  QSignalSpy spy(&tool, &QtFinderTool::started);
+
+  tool.startSearchOnDirectory("absolutePath", QStringList() << "key");
+  QCOMPARE(spy.count(), 1);
+}
+
+void QtFinderToolTest::stopSearch_goStoppedSignal() {
+  QtFinderTool tool;
+
+  QSignalSpy spy(&tool, &QtFinderTool::stopped);
+
+  tool.startSearchOnDirectory("absolutePath", QStringList() << "key");
+  tool.stop();
   QCOMPARE(spy.count(), 1);
 }
 

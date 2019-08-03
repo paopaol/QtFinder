@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QtFinderAbstractComponents.h>
-
+#include <memory>
 
 class QtFinderAppPrivate;
 class QtFinderApp : public QWidget {
@@ -20,9 +20,7 @@ public:
   void setFileSystemScanner(AbstractFileSystemScannerPtr &fileSystemScanner);
 
   void run();
-
-protected:
-  virtual void keyPressEvent(QKeyEvent *e) override;
+  static std::unique_ptr<QtFinderApp> newApp(QWidget *parent = nullptr);
 
 private:
   Q_DECLARE_PRIVATE(QtFinderApp);

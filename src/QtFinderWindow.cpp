@@ -4,6 +4,9 @@
 #include <QFileInfo>
 #include <QUrl>
 #include <QtFinderWindow.h>
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem;
 
 QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   ui.setupUi(this);
@@ -13,10 +16,6 @@ QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
           this, &QtFinderWindow::searchKeywordsChanged);
   connect(ui.searchLineEdit, &QtFinder::SearchLineEdit::keywordsEmpty, this,
           &QtFinderWindow::keywordsEmpty);
-  // connect(ui.searchLineEdit, &QtFinder::SearchLineEdit::shortcutKeyPressed,
-  //         this, &QtFinderWindow::shortcutKeyHandler);
-  // connect(ui.quickfixWidget, &QtFinder::QuickfixWidget::shortcutKeyPressed,
-  //         this, &QtFinderWindow::shortcutKeyHandler);
   connect(this, &QtFinderWindow::shortcutKeyPressed, this,
           &QtFinderWindow::shortcutKeyHandler);
 }
@@ -44,7 +43,10 @@ void QtFinderWindow::setFdCmdTriggerDelay(int delayMs) {
 
 void QtFinderWindow::clearSearchKeywords() { ui.searchLineEdit->clear(); }
 
-QString QtFinderWindow::currentDirectory() const { return directory_; }
+QString QtFinderWindow::currentDirectory() const {
+  auto path = directory_ == "~" ? QDir::homePath() : directory_;
+  return path;
+}
 
 void QtFinderWindow::setCurrentDirectory(const QString &absolutePath) {
   auto path = QDir::fromNativeSeparators(absolutePath);
@@ -69,8 +71,13 @@ void QtFinderWindow::selectCandidateAsDirectory(int row) {
   }
 }
 
-void QtFinderWindow::addCandidate(const QString &candidate) {
-  ui.quickfixWidget->addCandidate(candidate);
+void QtFinderWindow::addCandidates(const QStringList &candidates) {
+  ui.quickfixWidget->addCandidates(candidates);
+}
+
+void QtFinderWindow::setCandidates(const QStringList &candidates) {
+  ui.quickfixWidget->clear();
+  addCandidates(candidates);
 }
 
 int QtFinderWindow::candidateSize() const { return ui.quickfixWidget->count(); }
@@ -89,9 +96,18 @@ QString QtFinderWindow::selectCandidate(int row) {
   /// but we need convert relative path to absolute path
   QFileInfo fileInfo(text);
   if (!fileInfo.isAbsolute()) {
-    fileInfo = directory_ + "/" + text;
+    fileInfo = currentDirectory() + "/" + text;
   }
+  text = fileInfo.absoluteFilePath();
   return text;
+}
+
+void QtFinderWindow::focusRow(int row) {
+  if (ui.quickfixWidget->count() == 0) {
+    return;
+  }
+  ui.quickfixWidget->setCurrentRow(row);
+  ui.quickfixWidget->scrollToItem(ui.quickfixWidget->currentItem());
 }
 
 void QtFinderWindow::shortcutKeyHandler(Qt::Key key) {

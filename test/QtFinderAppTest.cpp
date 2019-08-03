@@ -35,10 +35,11 @@ public:
   // }
   MOCK_METHOD(void, selectCandidateAsFile, (int row), (override));
   MOCK_METHOD(void, selectCandidateAsDirectory, (int), (override));
-  MOCK_METHOD(void, addCandidate, (const QString &candidate), (override));
+  MOCK_METHOD(void, addCandidates, (const QStringList &candidates), (override));
   MOCK_METHOD(void, setCandidates, (const QStringList &candidates), (override));
   MOCK_METHOD(int, candidateSize, (), (const));
   MOCK_METHOD(void, keyPressEvent, (QKeyEvent *), (override));
+  MOCK_METHOD(void, focusRow, (int), (override));
 };
 
 class MockDesktopService final : public AbstractDesktopService {
@@ -106,7 +107,7 @@ private:
 };
 
 ACTION_P2(emitCandidateReady, tool, candidate) {
-  tool->candidateReady(candidate);
+  tool->candidatesReady(QStringList() << candidate);
 }
 
 ACTION_P2(emitSelectedFileChanged, win, dirOrFile) {
@@ -125,7 +126,7 @@ void QtFinderAppTest::candidateIsFile_openFile_Works() {
 
   EXPECT_CALL(*win_, setSearchKeywords(::testing::_, ::testing::_))
       .WillOnce(emitCandidateReady(tool_, searchResult));
-  EXPECT_CALL(*win_, addCandidate(::testing::_));
+  EXPECT_CALL(*win_, addCandidates(::testing::_));
   EXPECT_CALL(*win_, keyPressEvent(::testing::_))
       .WillOnce(emitSelectedFileChanged(win_, searchResult));
 

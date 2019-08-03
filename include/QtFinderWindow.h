@@ -11,6 +11,7 @@ class QtFinderWindow final : public QWidget {
   Q_OBJECT
 public:
   QtFinderWindow(QWidget *parent = nullptr);
+  virtual ~QtFinderWindow() noexcept;
   QtFinderWindow(const QtFinderWindow &other) = delete;
   QtFinderWindow &operator=(const QtFinderWindow &other) = delete;
 
@@ -21,10 +22,10 @@ public:
   void setCurrentDirectory(const QString &absolutePath);
   void selectCandidateAsFile(int row);
   void selectCandidateAsDirectory(int row);
-  void addCandidate(const QString &candidate);
+  void addCandidates(const QStringList &candidates);
+  void setCandidates(const QStringList &candidates);
   int candidateSize() const;
-
-  virtual ~QtFinderWindow() noexcept;
+  void focusRow(int row);
 
 protected:
   void keyPressEvent(QKeyEvent *) override;

@@ -89,8 +89,8 @@ void GuiComponentsTest::
   quickfixWidget.show();
 
   QCOMPARE(quickfixWidget.count(), 0);
-  quickfixWidget.addCandidate("d:/123/111.txt");
-  quickfixWidget.addCandidate("c:/123/111/txt");
+  quickfixWidget.addCandidates(QStringList() << "d:/123/111.txt"
+                                             << "c:/123/111/txt");
 
   QCOMPARE(quickfixWidget.count(), 2);
 }

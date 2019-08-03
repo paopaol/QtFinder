@@ -10,13 +10,18 @@ QtFinderTool::QtFinderTool(QObject *parent)
     : QObject(parent), fd_(new QProcess) {
   connect(fd_.data(), &QProcess::readyRead, this, [&]() {
     QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
+    QStringList candidates;
     while (fd_->canReadLine()) {
       QString line = fd_->readLine();
       line = line.trimmed();
       line = QDir::fromNativeSeparators(line);
-      emit candidateReady(line);
+      candidates << line;
     }
+    emit candidatesReady(candidates);
   });
+  connect(fd_.data(), &QProcess::started, this, &QtFinderTool::started);
+  connect(fd_.data(), static_cast<void (QProcess::*)(int)>(&QProcess::finished),
+          this, [&](int exitCode) { emit stopped(); });
 }
 
 QtFinderTool::~QtFinderTool() { stop(); }

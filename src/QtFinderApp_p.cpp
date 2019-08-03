@@ -4,13 +4,17 @@
 #include <QObject>
 
 void QtFinderAppPrivate::prepare() {
-  Q_Q(QtFinderApp);
   connect(win_.data(), &AbstractQtFinderWindow::searchKeywordsChanged, this,
           &QtFinderAppPrivate::onSearchKeywordsChanged);
-  connect(tool_.data(), &AbstractQtFinderTool::candidateReady, win_.data(),
-          &AbstractQtFinderWindow::addCandidate);
+  connect(tool_.data(), &AbstractQtFinderTool::candidatesReady, win_.data(),
+          &AbstractQtFinderWindow::addCandidates);
+  connect(tool_.data(), &AbstractQtFinderTool::stopped, this, [&]() {
+    win_->focusRow(0);
+  });
   connect(win_.data(), &AbstractQtFinderWindow::selectedFilechanged, this,
           &QtFinderAppPrivate::onSelectedFileChanged);
+  auto entrys = fileSystemScanner_->scanDirectory(win_->currentDirectory());
+  win_->setCandidates(entrys);
 }
 
 void QtFinderAppPrivate::onSearchKeywordsChanged(QtFinder::Cmd cmd,
@@ -18,6 +22,11 @@ void QtFinderAppPrivate::onSearchKeywordsChanged(QtFinder::Cmd cmd,
   switch (cmd) {
   case QtFinder::Cmd::kFd:
     tool_->startSearchOnDirectory(win_->currentDirectory(), keywords);
+    break;
+  case QtFinder::Cmd::kDirectoryChanged:
+    win_->setCurrentDirectory(keywords.front());
+    auto entrys = fileSystemScanner_->scanDirectory(win_->currentDirectory());
+    win_->setCandidates(entrys);
     break;
   }
 }

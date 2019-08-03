@@ -17,7 +17,7 @@ public:
   virtual ~QuickfixWidget() noexcept;
 
   void clear();
-  void addCandidate(const QString &candidate);
+  void addCandidates(const QStringList &candidates);
   void focusNextCandidate();
   void focusPreviousCandidate();
 

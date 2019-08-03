@@ -10,6 +10,8 @@ struct ShortcutKey {
 
   ShortcutKey(Qt::Key key)
       : Key(key), AliasKey(key), Modifier(Qt::NoModifier) {}
+  ShortcutKey(Qt::Key key, Qt::Key aliasKey)
+      : Key(key), AliasKey(aliasKey), Modifier(Qt::NoModifier) {}
 
   Qt::Key aliasKey(QKeyEvent *event) {
     auto key = event->key();

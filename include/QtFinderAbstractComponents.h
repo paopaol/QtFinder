@@ -7,12 +7,15 @@
 class AbstractQtFinderTool : public QObject {
   Q_OBJECT
 public:
+  explicit AbstractQtFinderTool(QObject *parent = nullptr) {}
   virtual ~AbstractQtFinderTool() {}
   virtual void startSearchOnDirectory(const QString &absolutePath,
                                       const QStringList &keywords) = 0;
   virtual void stop() = 0;
 signals:
-  void candidateReady(const QString &candidate);
+  void candidatesReady(const QStringList &candidates);
+  void started();
+  void stopped();
 };
 
 using AbstractQtFinderToolPtr = QScopedPointer<AbstractQtFinderTool>;
@@ -31,9 +34,10 @@ public:
   virtual void setCurrentDirectory(const QString &absolutePath) = 0;
   virtual void selectCandidateAsFile(int row) = 0;
   virtual void selectCandidateAsDirectory(int row) = 0;
-  virtual void addCandidate(const QString &candidate) = 0;
+  virtual void addCandidates(const QStringList &candidates) = 0;
   virtual void setCandidates(const QStringList &candidates) = 0;
   virtual int candidateSize() const = 0;
+  virtual void focusRow(int row) = 0;
 
 signals:
   void searchKeywordsChanged(QtFinder::Cmd cmd, const QStringList &keywords);
@@ -41,13 +45,13 @@ signals:
   void selectedFilechanged(const QString &path);
   void selectedDirectoryChanged(const QString &directory);
   void candidateEmpty();
-  void shortcutKeyPressed(Qt::Key key);
 };
 using AbstractQtFinderWindowPtr = QScopedPointer<AbstractQtFinderWindow>;
 
 class AbstractDesktopService : public QObject {
   Q_OBJECT
 public:
+  explicit AbstractDesktopService(QObject *parent = nullptr) {}
   virtual ~AbstractDesktopService() {}
   virtual void openWithFileManager(const QString &path) = 0;
   virtual void openFile(const QString &path) = 0;
@@ -57,6 +61,7 @@ using AbstractDesktopServicePtr = QScopedPointer<AbstractDesktopService>;
 class AbstractFileSystemScanner : public QObject {
   Q_OBJECT
 public:
+  explicit AbstractFileSystemScanner(QObject *parent = nullptr){};
   virtual ~AbstractFileSystemScanner() {}
   virtual QStringList scanDirectory(const QString &directory) = 0;
 };

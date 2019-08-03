@@ -75,8 +75,8 @@ void QtFinderWindowTest::
 void QtFinderWindowTest::candidateisEmpty_addTwoCandidates_sizeIsTwo() {
   QtFinderWindow win;
 
-  win.addCandidate("candidate_1");
-  win.addCandidate("candidate_2");
+  win.addCandidates(QStringList() << "candidate_1"
+                                  << "candidate_2");
   QCOMPARE(win.candidateSize(), 2);
 }
 
@@ -94,8 +94,7 @@ void QtFinderWindowTest::
   f1.open();
   f2.open();
 
-  win.addCandidate(f1.fileName());
-  win.addCandidate(f2.fileName());
+  win.addCandidates(QStringList() << f1.fileName() << f2.fileName());
 
   // win.selectCandidateAsFile(1);
   QTest::keyPress(&win, Qt::Key_Enter, Qt::ControlModifier);
@@ -117,8 +116,7 @@ void QtFinderWindowTest::hasSomeCandidates_moveDownUp_Works() {
   f1.open();
   f2.open();
 
-  win.addCandidate(f1.fileName());
-  win.addCandidate(f2.fileName());
+  win.addCandidates(QStringList() << f1.fileName() << f2.fileName());
 
   // win.selectCandidateAsFile(1);
   QTest::keyPress(&win, Qt::Key_Down, Qt::NoModifier, 1000);

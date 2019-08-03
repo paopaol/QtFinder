@@ -6,7 +6,7 @@ static std::vector<ShortcutKey> g_shortcutKeyTable = {
 
     // default enter directory or of file's directory
     ShortcutKey(Qt::Key_Enter),
-    ShortcutKey(Qt::Key_Return),
+    ShortcutKey(Qt::Key_Return, Qt::Key_Enter),
     ShortcutKey(Qt::Key_Right, Qt::AltModifier, QKEY(Qt::Key_Enter)),
 
     // default open file

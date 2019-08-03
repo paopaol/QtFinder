@@ -11,21 +11,21 @@ void QtFinderApp::setFinderTool(AbstractQtFinderToolPtr &finderTool) {
   Q_ASSERT(finderTool);
   Q_D(QtFinderApp);
   d->tool_.swap(finderTool);
-  d->tool_->setParent(this);
 }
 
 void QtFinderApp::setFinderWindow(AbstractQtFinderWindowPtr &finderWindow) {
   Q_ASSERT(finderWindow);
   Q_D(QtFinderApp);
   d->win_.swap(finderWindow);
-  d->win_->setParent(this);
+  d->layout_.addWidget(d->win_.data());
+  d->layout_.setMargin(0);
+  setLayout(&d->layout_);
 }
 
 void QtFinderApp::setDesktopService(AbstractDesktopServicePtr &desktopService) {
   Q_ASSERT(desktopService);
   Q_D(QtFinderApp);
   d->desktopService_.swap(desktopService);
-  d->desktopService_->setParent(this);
 }
 
 void QtFinderApp::setFileSystemScanner(
@@ -33,12 +33,9 @@ void QtFinderApp::setFileSystemScanner(
   Q_ASSERT(fileSystemScanner);
   Q_D(QtFinderApp);
   d->fileSystemScanner_.swap(fileSystemScanner);
-  d->fileSystemScanner_->setParent(this);
 }
 
 void QtFinderApp::run() {
   Q_D(QtFinderApp);
   d->prepare();
 }
-
-void QtFinderApp::keyPressEvent(QKeyEvent *e) { QWidget::keyPressEvent(e); }
