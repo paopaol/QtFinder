@@ -60,15 +60,15 @@ set(src-files
 
   )
 
-# if(CMAKE_COMPILER_IS_GNUCC)
-#   set(inked_libries stdc++fs)
-# endif()
+if(CMAKE_COMPILER_IS_GNUCC)
+  set(inked_libries stdc++fs)
+endif()
 
-# if(WIN32)
-#   set(GUI_TYPE WIN32)
-# elseif(APPLE)
-#   set(GUI_TYPE APPLE)
-# endif()
+if(WIN32)
+  set(GUI_TYPE WIN32)
+elseif(APPLE)
+  set(GUI_TYPE APPLE)
+endif()
 
 include_directories("./include")
 
