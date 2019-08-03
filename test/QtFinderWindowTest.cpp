@@ -19,7 +19,7 @@ private slots:
 
 void QtFinderWindowTest::defaultDirectoryIsHome() {
   QtFinderWindow win;
-  QCOMPARE(win.currentDirectory(), QString("~"));
+  QCOMPARE(win.currentDirectory(), QDir::homePath());
 }
 
 void QtFinderWindowTest::currentDirectoryIsHome_setCurrentDirectory_Works() {
