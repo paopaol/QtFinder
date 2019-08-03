@@ -118,7 +118,6 @@ void QtFinderWindowTest::hasSomeCandidates_moveDownUp_Works() {
 
   win.addCandidates(QStringList() << f1.fileName() << f2.fileName());
 
-  // win.selectCandidateAsFile(1);
   QTest::keyPress(&win, Qt::Key_Down, Qt::NoModifier, 1000);
   QTest::keyPress(&win, Qt::Key_Down, Qt::NoModifier, 1000);
   QTest::keyPress(&win, Qt::Key_Up, Qt::NoModifier, 1000);

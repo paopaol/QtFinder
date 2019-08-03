@@ -8,11 +8,12 @@ void QtFinderAppPrivate::prepare() {
           &QtFinderAppPrivate::onSearchKeywordsChanged);
   connect(tool_.data(), &AbstractQtFinderTool::candidatesReady, win_.data(),
           &AbstractQtFinderWindow::addCandidates);
-  connect(tool_.data(), &AbstractQtFinderTool::stopped, this, [&]() {
-    win_->focusRow(0);
-  });
+  connect(tool_.data(), &AbstractQtFinderTool::stopped, this,
+          [&]() { win_->focusRow(0); });
   connect(win_.data(), &AbstractQtFinderWindow::selectedFilechanged, this,
           &QtFinderAppPrivate::onSelectedFileChanged);
+  connect(win_.data(), &AbstractQtFinderWindow::selectedDirectoryChanged,
+          desktopService_.data(), &AbstractDesktopService::openWithFileManager);
   auto entrys = fileSystemScanner_->scanDirectory(win_->currentDirectory());
   win_->setCandidates(entrys);
 }

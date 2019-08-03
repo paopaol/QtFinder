@@ -16,7 +16,6 @@ struct ShortcutKey {
   Qt::Key aliasKey(QKeyEvent *event) {
     auto key = event->key();
     auto modifiers = event->modifiers();
-
     return (key == Key && modifiers == Modifier) ? AliasKey : Qt::Key_unknown;
   }
 

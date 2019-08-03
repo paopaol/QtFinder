@@ -44,7 +44,9 @@ void QuickfixWidget::updateCurrentRow(SelectOpt opt) {
 
 void QuickfixWidget::addCandidates(const QStringList &candidates) {
   addItems(candidates);
+  currentRow_ = count() - 1;
   scrollToBottom();
+  updateCurrentRow(SelectOpt::kKeep);
 }
 
 void QuickfixWidget::focusNextCandidate() {

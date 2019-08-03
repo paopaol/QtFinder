@@ -12,6 +12,8 @@ static std::vector<ShortcutKey> g_shortcutKeyTable = {
     // default open file
     ShortcutKey(Qt::Key_Enter, Qt::ControlModifier,
                 QKEY(Qt::Key_Control | Qt::Key_Enter)),
+    ShortcutKey(Qt::Key_Return, Qt::ControlModifier,
+                QKEY(Qt::Key_Control | Qt::Key_Enter)),
 
     ShortcutKey(Qt::Key_Down),
     ShortcutKey(Qt::Key_J, Qt::ControlModifier, QKEY(Qt::Key_Down)),
