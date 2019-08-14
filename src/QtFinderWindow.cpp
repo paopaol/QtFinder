@@ -1,239 +1,141 @@
-#include <QDebug>
+#include <Events.h>
 #include <QDesktopServices>
 #include <QDir>
-#include <QFileIconProvider>
 #include <QFileInfo>
-#include <QStringListModel>
-#include <QTextCodec>
 #include <QUrl>
 #include <QtFinderWindow.h>
 #include <experimental/filesystem>
 
-namespace fs = std::experimental::filesystem::v1;
-
-static QString fdPattern(const QStringList &keywords);
-static void killProcess(QProcess &process);
-static QStringList directoryEntryList(const QString &directory);
-static QListWidgetItem *createFileItem(const QString &path, const QString &text,
-                                       QListWidget *parent = nullptr);
+namespace fs = std::experimental::filesystem;
 
 QtFinderWindow::QtFinderWindow(QWidget *parent) : QWidget(parent) {
   ui.setupUi(this);
+  ui.promptLabel->setText(directory_);
 
-  connect(ui.searchLineEdit, &SearchLineEdit::searchKeyWordsChanged, this,
-          &QtFinderWindow::onSearchKeyWordsChanged);
-  connect(ui.searchLineEdit, &SearchLineEdit::keywordsEmpty, this,
-          [&]() { showDirectory(); });
-  connect(ui.searchLineEdit, &SearchLineEdit::keyPressed, this,
-          &QtFinderWindow::onKeyPressed);
-  connect(ui.quickfixWidget, &QuickfixWidget::keyPressed, this,
-          &QtFinderWindow::onKeyPressed);
-  connect(&fd_, &QProcess::readyRead, this, [&]() {
-    QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
-    while (fd_.canReadLine()) {
-      QString line = fd_.readLine();
-      line = line.trimmed();
-      line = QDir::fromNativeSeparators(line);
-      ui.quickfixWidget->addItem(createFileItem(line, line, ui.quickfixWidget));
-    }
-    ui.quickfixWidget->scrollToBottom();
-  });
-  connect(&fd_, &QProcess::readyReadStandardError, [&]() {
-    QTextCodec *textCodec = QTextCodec::codecForName("UTF8");
-    QString line = textCodec->fromUnicode(fd_.readAllStandardError());
-    qDebug() << line;
-  });
-  connect(&fd_, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this,
-          [&](int exitCode) { ui.quickfixWidget->scrollToTop(); });
-  ui.quickfixWidget->setUniformItemSizes(true);
+  connect(ui.searchLineEdit, &QtFinder::SearchLineEdit::searchKeywordsChanged,
+          this, &QtFinderWindow::searchKeywordsChanged);
+  connect(ui.searchLineEdit, &QtFinder::SearchLineEdit::keywordsEmpty, this,
+          &QtFinderWindow::keywordsEmpty);
+  connect(this, &QtFinderWindow::shortcutKeyPressed, this,
+          &QtFinderWindow::shortcutKeyHandler);
 }
 
 QtFinderWindow::~QtFinderWindow() noexcept {}
 
-void QtFinderWindow::show() {
-  QWidget::show();
-  showDirectory();
+void QtFinderWindow::keyPressEvent(QKeyEvent *event) {
+  auto key = key_press_event(event);
+  if (key != Qt::Key_unknown) {
+    emit shortcutKeyPressed(key);
+    return;
+  }
+  QWidget::keyPressEvent(event);
 }
 
-void QtFinderWindow::onSearchKeyWordsChanged(const QStringList &keywords,
-                                             QtFinder::Cmd cmd) {
-  switch (cmd) {
-  case QtFinder::Cmd::kFd: {
-    fdSearch(keywords);
-    break;
-  }
-  case QtFinder::Cmd::kQuickfix: {
-    // quickfixSearch(keywords);
-    break;
-  }
-  case QtFinder::Cmd::kDirectoryChanged: {
-    onDirectoryChanged(keywords.front());
-    break;
-  }
-  default:
-    break;
-  }
-  qDebug() << keywords;
+void QtFinderWindow::setSearchKeywords(const QtFinder::Cmd cmd,
+                                       const QString &keywords) {
+  auto keywordsWithCmd = toQString(cmd) + " " + keywords;
+  ui.searchLineEdit->setText(keywordsWithCmd);
 }
 
-void QtFinderWindow::onKeyPressed(Qt::Key key) {
+void QtFinderWindow::setFdCmdTriggerDelay(int delayMs) {
+  ui.searchLineEdit->setFdCmdTriggerDelay(delayMs);
+}
+
+void QtFinderWindow::clearSearchKeywords() { ui.searchLineEdit->clear(); }
+
+QString QtFinderWindow::currentDirectory() const {
+  auto path = directory_ == "~" ? QDir::homePath() : directory_;
+  return path;
+}
+
+void QtFinderWindow::setCurrentDirectory(const QString &absolutePath) {
+  auto path = QDir::fromNativeSeparators(absolutePath);
+  auto home = QDir::homePath();
+
+  path = path == home ? "~" : path;
+  directory_ = path;
+  ui.promptLabel->setText(directory_);
+}
+
+void QtFinderWindow::selectCandidateAsFile(int row) {
+  auto text = selectCandidate(row);
+  if (!text.isEmpty()) {
+    emit selectedFilechanged(text);
+  }
+}
+
+void QtFinderWindow::selectCandidateAsDirectory(int row) {
+  auto text = selectCandidate(row);
+  if (!text.isEmpty()) {
+    emit selectedDirectoryChanged(text);
+  }
+}
+
+void QtFinderWindow::addCandidates(const QStringList &candidates) {
+  ui.quickfixWidget->addCandidates(candidates);
+}
+
+void QtFinderWindow::setCandidates(const QStringList &candidates) {
+  ui.quickfixWidget->clear();
+  addCandidates(candidates);
+}
+
+int QtFinderWindow::candidateSize() const { return ui.quickfixWidget->count(); }
+
+QString QtFinderWindow::selectCandidate(int row) {
+  auto item = ui.quickfixWidget->item(row);
+  if (!item) {
+    emit candidateEmpty();
+    return "";
+  }
+  auto text = item->text();
+  if (text.isEmpty()) {
+    return "";
+  }
+  /// the text maybe a relative path or a absolute path,
+  /// but we need convert relative path to absolute path
+  QFileInfo fileInfo(text);
+  if (!fileInfo.isAbsolute()) {
+    fileInfo = currentDirectory() + "/" + text;
+  }
+  text = fileInfo.absoluteFilePath();
+  return text;
+}
+
+void QtFinderWindow::focusRow(int row) {
+  if (ui.quickfixWidget->count() == 0) {
+    return;
+  }
+  ui.quickfixWidget->setCurrentRow(row);
+  ui.quickfixWidget->scrollToItem(ui.quickfixWidget->currentItem());
+}
+
+void QtFinderWindow::shortcutKeyHandler(Qt::Key key) {
   switch (key) {
+  case Qt::Key_Enter | Qt::Key_Control: {
+    selectCandidateAsDirectory(ui.quickfixWidget->currentRow());
+    break;
+  }
   case Qt::Key_Enter: {
-    onEnterKeyPressed();
+    selectCandidateAsFile(ui.quickfixWidget->currentRow());
     break;
   }
   case Qt::Key_Down: {
-    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kDown);
+    ui.quickfixWidget->focusNextCandidate();
     break;
   }
   case Qt::Key_Up: {
-    ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kUp);
+    ui.quickfixWidget->focusPreviousCandidate();
     break;
   }
-  case Qt::Key_Enter | Qt::Key_Control: {
-    onCtrlEnterPressed();
+  case Qt::Key_H | Qt::Key_Control: {
+    QDir dir(currentDirectory());
+    dir.cdUp();
+    emit searchKeywordsChanged(QtFinder::Cmd::kDirectoryChanged,
+                               QStringList() << dir.absolutePath());
     break;
   }
-  case Qt::Key_Control | Qt::Key_H: {
-    showUpDirectory();
-  }
-  default:
-    break;
   }
 }
 
-void QtFinderWindow::onEnterKeyPressed() {
-  auto item = ui.quickfixWidget->currentItem();
-  if (!item) {
-    return;
-  }
-  auto text = item->text();
-
-  /// the text maybe a relative path or a absolute path,
-  /// but we need convert relative path to absolute path
-  QFileInfo fileInfo(text);
-  if (!fileInfo.isAbsolute()) {
-    fileInfo = directory_ + "/" + text;
-  }
-  if (!fileInfo.isDir()) {
-    openDirectoryOfFile(fileInfo.absoluteFilePath());
-    return;
-  }
-  directory_ = fileInfo.absoluteFilePath();
-
-  showDirectory();
-}
-
-void QtFinderWindow::onCtrlEnterPressed() {
-  auto item = ui.quickfixWidget->currentItem();
-  if (!item) {
-    return;
-  }
-  auto text = item->text();
-
-  /// the text maybe a relative path or a absolute path,
-  /// but we need convert relative path to absolute path
-  QFileInfo fileInfo(text);
-  if (!fileInfo.isAbsolute()) {
-    fileInfo = directory_ + "/" + text;
-  }
-  openDirectoryOrFile(fileInfo.absoluteFilePath());
-}
-
-void QtFinderWindow::fdSearch(const QStringList &keywords) {
-  ui.quickfixWidget->clear();
-  killProcess(fd_);
-
-  QStringList fdArgs;
-  fdArgs << "-p" << fdPattern(keywords) << directory_;
-
-  fd_.start("fd", fdArgs);
-  fd_.waitForStarted();
-  qDebug() << fd_.arguments();
-}
-
-void QtFinderWindow::onDirectoryChanged(const QString &directory) {
-  QDir dir(directory);
-  directory_ = directory;
-  showDirectory();
-}
-
-void QtFinderWindow::showDirectory() {
-  directory_ = directory_ == "~" ? QDir::homePath() : directory_;
-
-  ui.quickfixWidget->clear();
-  ui.promptLabel->setText(directory_);
-  auto entrys = directoryEntryList(directory_);
-  for (auto &name : entrys) {
-    fs::path absPath(directory_.toLocal8Bit().toStdString());
-    absPath.append(name.toLocal8Bit().data());
-    auto item = createFileItem(QString::fromLocal8Bit(absPath.string().c_str()),
-                               name, ui.quickfixWidget);
-    ui.quickfixWidget->addItem(item);
-  }
-  ui.quickfixWidget->updateCurrentRow(QuickfixWidget::SelectOpt::kKeep);
-}
-
-void QtFinderWindow::showUpDirectory() {
-  fs::path dir(directory_.toLocal8Bit().toStdString());
-  if (dir != dir.root_path()) {
-    dir = dir.parent_path();
-    directory_ = QString::fromLocal8Bit(dir.string().c_str());
-  }
-  showDirectory();
-}
-
-void QtFinderWindow::openDirectoryOfFile(const QString &filePath) {
-  fs::path absPath(filePath.toStdString());
-  QString dir;
-#ifdef Q_OS_WIN
-  dir = absPath.string().c_str();
-  QUrl url = QUrl::fromLocalFile(dir);
-  QProcess explorer;
-  QString cmd = "explorer.exe /select, " + url.toString();
-  explorer.startDetached(cmd);
-#else
-  dir = absPath.parent_path().string().c_str();
-  QUrl url = QUrl::fromLocalFile(dir);
-  QDesktopServices::openUrl(url);
-#endif
-}
-
-void QtFinderWindow::openDirectoryOrFile(const QString &path) {
-  QUrl url = QUrl::fromLocalFile(path);
-  QDesktopServices::openUrl(url);
-}
-
-static QString fdPattern(const QStringList &keywords) {
-  QString pattern;
-  QTextStream st(&pattern);
-  for (auto &key : keywords) {
-    st << key << ".*";
-  }
-  return pattern;
-}
-
-static void killProcess(QProcess &process) {
-  if (process.state() == QProcess::ProcessState::Starting) {
-    process.waitForStarted();
-  }
-
-  if (process.state() == QProcess::ProcessState::Running) {
-    process.kill();
-    process.waitForFinished();
-  }
-}
-
-static QStringList directoryEntryList(const QString &directory) {
-  QDir dir(directory);
-  QDir::Filters filters = QDir::Dirs | QDir::Files | QDir::Hidden;
-  filters |= dir.isRoot() ? QDir::NoDotAndDotDot : QDir::NoDot;
-  return dir.entryList(filters);
-}
-
-static QListWidgetItem *createFileItem(const QString &path, const QString &text,
-                                       QListWidget *parent) {
-  QIcon icon = QFileIconProvider().icon(QFileInfo(path));
-  QListWidgetItem *item = new QListWidgetItem(icon, text, parent);
-  return item;
-}
+static QString fromQtFinderCmd(QtFinder::Cmd cmd) { return ""; }

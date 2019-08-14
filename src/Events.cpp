@@ -1,54 +1,44 @@
 #include <Events.h>
 
+#define QKEY(key) static_cast<Qt::Key>(key)
+static std::vector<ShortcutKey> g_shortcutKeyTable = {
+    ShortcutKey(Qt::Key_Tab),
+
+    // default enter directory or of file's directory
+    ShortcutKey(Qt::Key_Enter),
+    ShortcutKey(Qt::Key_Return, Qt::Key_Enter),
+    ShortcutKey(Qt::Key_Right, Qt::AltModifier, QKEY(Qt::Key_Enter)),
+
+    // default open file
+    ShortcutKey(Qt::Key_Enter, Qt::ControlModifier,
+                QKEY(Qt::Key_Control | Qt::Key_Enter)),
+    ShortcutKey(Qt::Key_Return, Qt::ControlModifier,
+                QKEY(Qt::Key_Control | Qt::Key_Enter)),
+
+    ShortcutKey(Qt::Key_Down),
+    ShortcutKey(Qt::Key_J, Qt::ControlModifier, QKEY(Qt::Key_Down)),
+    ShortcutKey(Qt::Key_N, Qt::ControlModifier, QKEY(Qt::Key_Down)),
+
+    ShortcutKey(Qt::Key_Up),
+    ShortcutKey(Qt::Key_P, Qt::ControlModifier, QKEY(Qt::Key_Up)),
+    ShortcutKey(Qt::Key_K, Qt::ControlModifier, QKEY(Qt::Key_Up)),
+
+    // cd up
+    ShortcutKey(Qt::Key_H, Qt::ControlModifier,
+                QKEY(Qt::Key_Control | Qt::Key_H)),
+    ShortcutKey(Qt::Key_Left, Qt::AltModifier,
+                QKEY(Qt::Key_Control | Qt::Key_H)),
+
+};
+
+std::vector<ShortcutKey> &shortcutKeyTable() { return g_shortcutKeyTable; }
+
 Qt::Key key_press_event(QKeyEvent *event) {
-  switch (event->key()) {
-  case Qt::Key_Tab: {
-    return Qt::Key_Tab;
-  }
-  case Qt::Key_Enter:
-  case Qt::Key_Return: {
-    if (event->modifiers() == Qt::ControlModifier) {
-      return static_cast<Qt::Key>(Qt::Key_Control | Qt::Key_Enter);
+  for (auto &shortcutKey : shortcutKeyTable()) {
+    Qt::Key key = shortcutKey.aliasKey(event);
+    if (key != Qt::Key_unknown) {
+      return key;
     }
-    return Qt::Key_Enter;
-  }
-  case Qt::Key_Down: {
-    return Qt::Key_Down;
-  }
-  case Qt::Key_N:
-  case Qt::Key_J: {
-    if (event->modifiers() == Qt::ControlModifier) {
-      return Qt::Key_Down;
-    }
-    break;
-  }
-  case Qt::Key_Up: {
-    return Qt::Key_Up;
-  }
-  case Qt::Key_P:
-  case Qt::Key_K: {
-    if (event->modifiers() == Qt::ControlModifier) {
-      return Qt::Key_Up;
-    }
-    break;
-  }
-  case Qt::Key_H: {
-    if (event->modifiers() == Qt::ControlModifier) {
-      return static_cast<Qt::Key>(Qt::Key_Control | Qt::Key_H);
-    }
-  }
-  case Qt::Key_Right: {
-    if (event->modifiers() == Qt::AltModifier) {
-      return Qt::Key_Enter;
-    }
-  }
-  case Qt::Key_Left: {
-    if (event->modifiers() == Qt::AltModifier) {
-      return static_cast<Qt::Key>(Qt::Key_Control | Qt::Key_H);
-    }
-  }
-  default:
-    break;
   }
   return Qt::Key_unknown;
 }

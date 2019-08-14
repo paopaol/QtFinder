@@ -12,7 +12,7 @@ template <class T> inline QList<T> &cdrList(QList<T> &list) {
   }
   return list;
 }
-
+namespace QtFinder {
 class SearchLineEdit : public QLineEdit {
   Q_OBJECT
 public:
@@ -25,8 +25,9 @@ public:
   //! Destructor
   virtual ~SearchLineEdit() noexcept;
 
+  void setFdCmdTriggerDelay(int delayMs);
+
 protected:
-  void keyPressEvent(QKeyEvent *) override;
   bool focusNextPrevChild(bool next) override;
 
 signals:
@@ -35,17 +36,10 @@ signals:
    * @details the input key word length must >= 3 chars
    * @return void
    */
-  void searchKeyWordsChanged(const QStringList &keywords, QtFinder::Cmd cmd);
+  void searchKeywordsChanged(QtFinder::Cmd cmd, const QStringList &keywords);
   /**@brief search line edit buffer is empty
    */
   void keywordsEmpty();
-
-  /**@brief emited when some key pressed
-     ctrl+n/j will convert to down key
-     ctrl+p/k will convert to up key
-     enter/return/tab will convert to enter
-   */
-  void keyPressed(Qt::Key key);
 
 private:
   typedef std::function<void(const QStringList &keywords)> cmdEmiter;
@@ -53,7 +47,7 @@ private:
   void emitQtFinderCmd(QStringList &keywords);
 
   /**@brief if keywords is validate successed, then,it will
-     emit searchKeyWordsChanged signal with a @see QtFinder::Cmd
+     emit searchKeywordsChanged signal with a @see QtFinder::Cmd
    */
   void fdCmdEmit(const QStringList &keywords);
   void directoryCmdEmit(const QStringList &keywords);
@@ -66,5 +60,6 @@ private:
   QTimer delayTimer_;
   QMap<QString, cmdEmiter> cmdTable_;
 };
+} // namespace QtFinder
 
 #endif /* INPUT_BOX_H */

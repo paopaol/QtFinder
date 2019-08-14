@@ -1,11 +1,16 @@
-#include <QuickfixLabel.h>
+#include <QFileIconProvider>
 #include <QuickfixWidget.h>
 
-#include <Events.h>
 #include <QKeyEvent>
 #include <QVBoxLayout>
 
-QuickfixWidget::QuickfixWidget(QWidget *parent) : QListWidget(parent) {}
+namespace QtFinder {
+static QListWidgetItem *createFileItem(const QString &path, const QString &text,
+                                       QListWidget *parent);
+
+QuickfixWidget::QuickfixWidget(QWidget *parent) : QListWidget(parent) {
+  setUniformItemSizes(true);
+}
 
 QuickfixWidget::~QuickfixWidget() noexcept {}
 
@@ -37,13 +42,20 @@ void QuickfixWidget::updateCurrentRow(SelectOpt opt) {
   }
 }
 
-void QuickfixWidget::keyPressEvent(QKeyEvent *event) {
-  auto key = key_press_event(event);
-  if (key != Qt::Key_unknown) {
-    emit keyPressed(key);
-    return;
-  }
-  QListWidget::keyPressEvent(event);
+void QuickfixWidget::addCandidates(const QStringList &candidates) {
+  addItems(candidates);
+  currentRow_ = count() - 1;
+  scrollToBottom();
+  updateCurrentRow(SelectOpt::kKeep);
+}
+
+void QuickfixWidget::focusNextCandidate() {
+  updateCurrentRow(SelectOpt::kDown);
+}
+
+void QuickfixWidget::focusPreviousCandidate() {
+  updateCurrentRow(SelectOpt::kUp);
 }
 
 bool QuickfixWidget::focusNextPrevChild(bool next) { return false; }
+} // namespace QtFinder

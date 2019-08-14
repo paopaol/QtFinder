@@ -1,4 +1,3 @@
-#include <Events.h>
 #include <QDir>
 #include <QKeyEvent>
 #include <QRegExp>
@@ -7,23 +6,32 @@
 
 namespace fs = std::experimental::filesystem::v1;
 
+namespace QtFinder {
 static bool isAbsDirOrHome(const QString &key);
-
 SearchLineEdit::SearchLineEdit(QWidget *parent) : QLineEdit(parent) {
-  connect(this, &QLineEdit::textEdited, this, &SearchLineEdit::parseUserInput);
+  qRegisterMetaType<QtFinder::Cmd>("QtFinder::Cmd");
+  qRegisterMetaType<Qt::Key>("Qt::Key");
+
+  connect(this, &QLineEdit::textChanged, this, &SearchLineEdit::parseUserInput);
   connect(&delayTimer_, &QTimer::timeout, this,
-          [&]() { emit searchKeyWordsChanged(keywords_, QtFinder::Cmd::kFd); });
+          [&]() { emit searchKeywordsChanged(QtFinder::Cmd::kFd, keywords_); });
   delayTimer_.setSingleShot(true);
 
   using namespace std::placeholders;
   QMap<QString, cmdEmiter> cmdTable = {
-      {":fd", std::bind(&SearchLineEdit::fdCmdEmit, this, _1)},
-      {":quickfix", std::bind(&SearchLineEdit::quickfixCmdEmit, this, _1)},
-      {":directory", std::bind(&SearchLineEdit::directoryCmdEmit, this, _1)}};
+      {toQString(Cmd::kFd), std::bind(&SearchLineEdit::fdCmdEmit, this, _1)},
+      {toQString(Cmd::kQuickfix),
+       std::bind(&SearchLineEdit::quickfixCmdEmit, this, _1)},
+      {toQString(Cmd::kDirectoryChanged),
+       std::bind(&SearchLineEdit::directoryCmdEmit, this, _1)}};
   cmdTable_ = cmdTable;
 }
 
 SearchLineEdit::~SearchLineEdit() noexcept {}
+
+void SearchLineEdit::setFdCmdTriggerDelay(int delayMs) {
+  searchDelay_ = delayMs;
+}
 
 void SearchLineEdit::parseUserInput(const QString &text) {
   /// canel search timer,and restart the timer
@@ -49,6 +57,11 @@ void SearchLineEdit::emitQtFinderCmd(QStringList &keywords) {
   } else {
     cmdString = key.toLower();
   }
+  for (auto cmd = cmdTable_.begin(); cmd != cmdTable_.end(); cmd++) {
+    if (cmd.key().startsWith(key) && cmd.key() != key) {
+      return;
+    }
+  }
   if (!cmdTable_.contains(cmdString)) {
     cmdString = ":quickfix";
     keywords.prepend(cmdString);
@@ -69,20 +82,11 @@ void SearchLineEdit::fdCmdEmit(const QStringList &keywords) {
 
 void SearchLineEdit::directoryCmdEmit(const QStringList &keywords) {
   clear();
-  emit searchKeyWordsChanged(keywords, QtFinder::Cmd::kDirectoryChanged);
+  emit searchKeywordsChanged(QtFinder::Cmd::kDirectoryChanged, keywords);
 }
 
 void SearchLineEdit::quickfixCmdEmit(const QStringList &keywords) {
-  emit searchKeyWordsChanged(keywords, QtFinder::Cmd::kQuickfix);
-}
-
-void SearchLineEdit::keyPressEvent(QKeyEvent *event) {
-  auto key = key_press_event(event);
-  if (key != Qt::Key_unknown) {
-    emit keyPressed(key);
-    return;
-  }
-  QLineEdit::keyPressEvent(event);
+  emit searchKeywordsChanged(QtFinder::Cmd::kQuickfix, keywords);
 }
 
 bool SearchLineEdit::focusNextPrevChild(bool next) { return false; }
@@ -95,3 +99,4 @@ static bool isAbsDirOrHome(const QString &key) {
   }
   return false;
 }
+} // namespace QtFinder

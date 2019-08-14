@@ -22,7 +22,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="SearchLineEdit" name="searchLineEdit">
+    <widget class="QtFinder::SearchLineEdit" name="searchLineEdit">
      <property name="text">
       <string/>
      </property>
@@ -32,21 +32,21 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="QuickfixWidget" name="quickfixWidget"/>
+    <widget class="QtFinder::QuickfixWidget" name="quickfixWidget"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SearchLineEdit</class>
+   <class>QtFinder::SearchLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">SearchLineEdit.h</header>
    <slots>
-    <signal>searchKeyWordsChanged(QStringList)</signal>
+    <signal>searchKeywordsChanged(QStringList)</signal>
    </slots>
   </customwidget>
   <customwidget>
-   <class>QuickfixWidget</class>
+   <class>QtFinder::QuickfixWidget</class>
    <extends>QListWidget</extends>
    <header location="global">QuickfixWidget.h</header>
   </customwidget>
