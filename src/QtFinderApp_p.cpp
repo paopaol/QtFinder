@@ -22,6 +22,7 @@ void QtFinderAppPrivate::onSearchKeywordsChanged(QtFinder::Cmd cmd,
                                                  const QStringList &keywords) {
   switch (cmd) {
   case QtFinder::Cmd::kFd:
+    win_->setCandidates(QStringList());
     tool_->startSearchOnDirectory(win_->currentDirectory(), keywords);
     break;
   case QtFinder::Cmd::kDirectoryChanged:
