@@ -37,5 +37,5 @@ void QtFinderApp::setFileSystemScanner(
 
 void QtFinderApp::run() {
   Q_D(QtFinderApp);
-  d->prepare();
+  std::call_once(d->onceFlag_, [&]() { d->prepare(); });
 }

@@ -13,6 +13,8 @@ std::unique_ptr<QtFinderApp> QtFinderApp::newApp(QWidget *parent) {
       new DesktopServiceImpl(app.get()));
   QScopedPointer<AbstractFileSystemScanner> fileSystemScanner(
       new FileSystemScannerImpl(app.get()));
+
+  win->setMinimumSize(QSize(800, 600));
   app->setFinderTool(tool);
   app->setFinderWindow(win);
   app->setDesktopService(desktopService);
