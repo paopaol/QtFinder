@@ -128,6 +128,13 @@ void QtFinderWindow::shortcutKeyHandler(Qt::Key key) {
     ui.quickfixWidget->focusPreviousCandidate();
     break;
   }
+  case Qt::Key_H | Qt::Key_Control: {
+    QDir dir(currentDirectory());
+    dir.cdUp();
+    emit searchKeywordsChanged(QtFinder::Cmd::kDirectoryChanged,
+                               QStringList() << dir.absolutePath());
+    break;
+  }
   }
 }
 
